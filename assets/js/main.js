@@ -39,7 +39,7 @@ ready(() => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
       if (scrollY > 50) {
         header.classList.add('scrolled');
-      } else {
+    } else {
         header.classList.remove('scrolled');
       }
     };
@@ -188,7 +188,7 @@ ready(() => {
       { year: 2019, text: 'Selected by Food Tank as initiative redefining food & agriculture in Middle East' },
       { year: 2020, text: 'CLIMAT wins Khalifa Date Palm Award; Ardi Ardak featured by FAO' },
       { year: 2021, text: 'Ardi Ardak national food security initiative; Urban Oasis renovation begins' },
-      { year: 2023, text: 'Urban Oasis engagement center launched; wins PRIMA S1 Nexus Award — First Place' },
+      { year: 2023, text: 'Urban Oasis engagement center launched; wins PRIMA WEFE Nexus Award — First Place' },
       { year: 2024, text: 'AFESD Small Green Innovative Project secured; Champion of Plastic Pollution Prevention' },
       { year: 2025, text: 'Strategy 2025–2030 and Portfolio 2025 published' },
     ];
@@ -227,7 +227,7 @@ ready(() => {
       const container = timeline;
       const item = items[i];
       if (item && container) {
-        const targetLeft = item.offsetLeft - (container.clientWidth / 2) + (item.clientWidth / 2);
+      const targetLeft = item.offsetLeft - (container.clientWidth / 2) + (item.clientWidth / 2);
         // Use requestAnimationFrame for better cross-browser support
         const scrollToPosition = () => {
           const target = Math.max(0, targetLeft);
@@ -435,31 +435,26 @@ ready(() => {
       dragging: true
     }).setView([33.897, 35.478], 8); // Start at Lebanon view
 
-    // Add Carto Light basemap with labels (less prominent)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // Add Carto Light basemap without labels (no country names)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(map);
     
-    // Add CSS to reduce prominence of country labels and hide specific ones
+    // Add CSS to ensure no labels appear (hide any that might slip through)
     const style = document.createElement('style');
     style.textContent = `
       .leaflet-container .leaflet-pane {
         position: relative;
       }
-      /* Make map labels less prominent */
-      .leaflet-container .leaflet-pane svg text {
-        opacity: 0.3;
-        font-size: 10px !important;
-      }
-      /* Hide specific country names that might interfere - adjust as needed */
-      .leaflet-container .leaflet-pane svg text[text-anchor="middle"] {
-        opacity: 0.2;
-      }
-      /* On hover/interaction, labels become more visible */
-      .leaflet-container:hover .leaflet-pane svg text {
-        opacity: 0.5;
+      /* Hide all text labels on the map */
+      .leaflet-container .leaflet-pane svg text,
+      .leaflet-container .leaflet-pane .leaflet-tile-container text,
+      .leaflet-container text {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
       }
     `;
     document.head.appendChild(style);
@@ -638,37 +633,42 @@ ready(() => {
         'brussels-eu', // Brussels, Belgium (European Commission)
         'barcelona-prima', // Barcelona, Spain (PRIMA)
         'amsterdam-porticus', 'amsterdam-seed-to-table', // Amsterdam, Netherlands
-        'leusden-ruaf' // Leusden, Netherlands (RUAF Foundation)
+        'leusden-ruaf', // Leusden, Netherlands (RUAF Foundation)
+        'zurich-drosos' // Zurich, Switzerland (DROSOS Foundation)
       ];
       
       // Also check for European locations by name patterns
-      const europeanNames = ['rome', 'brussels', 'barcelona', 'amsterdam', 'leusden'];
+      const europeanNames = ['rome', 'brussels', 'barcelona', 'amsterdam', 'leusden', 'zurich', 'paris', 'london', 'berlin', 'madrid', 'lisbon', 'athens'];
       if (node.name && europeanNames.some(name => node.name.toLowerCase().includes(name))) {
         return true;
       }
       
       // Check by ID first
-      if (europeanIds.includes(node.id)) {
+      if (node.id && europeanIds.includes(node.id)) {
         return true;
       }
       
-      // Also check by coordinates (Mediterranean Europe: 35-50°N, -10-40°E)
+      // Also check by coordinates (Mediterranean Europe: 35-55°N, -10-40°E)
       const lat = node.lat;
       const lon = node.lon;
-      if (lat >= 35 && lat <= 50 && lon >= -10 && lon <= 40) {
+      if (lat >= 35 && lat <= 55 && lon >= -10 && lon <= 40) {
         // Additional check: exclude MENA countries (Arab countries)
         const menaCountryNames = ['beirut', 'arsal', 'baalbek', 'yammouneh', 'zahle', 'nabatieh', 
           'saida', 'akkar', 'shouf', 'hasbaya', 'cairo', 'amman', 'damascus', 'baghdad', 
           'ramallah', 'rabat', 'tunis', 'algiers', 'sanaa', 'riyadh', 'doha', 'manama', 
-          'muscat', 'abu-dhabi', 'kuwait'];
-        if (!menaCountryNames.some(name => node.id && node.id.includes(name))) {
+          'muscat', 'abu-dhabi', 'kuwait', 'dubai', 'sharjah'];
+        if (node.id && !menaCountryNames.some(name => node.id.includes(name))) {
+          return true;
+        }
+        // Also check by name if no ID
+        if (node.name && !menaCountryNames.some(name => node.name.toLowerCase().includes(name))) {
           return true;
         }
       }
       
       return false;
     }
-    
+
     // Tab switching for local/regional/global views
     let currentView = 'local';
     
@@ -687,10 +687,20 @@ ready(() => {
         const europeanNodes = esduData.global.filter(node => isEuropeanLocation(node));
         filteredNodes = [...menaNodes, ...europeanNodes];
       } else if (view === 'global') {
-        // Global view: International locations (excluding European ones shown in regional)
-        filteredNodes = esduData.global.filter(node => 
-          node.type === 'global' && !isEuropeanLocation(node)
-        );
+        // Global view: All international locations including key European partners
+        // Include major European partners (FAO, IFAD, WFP, EU) in both views for balance
+        const majorEuropeanIds = ['rome-fao', 'rome-ifad', 'rome-wfp', 'brussels-eu', 'barcelona-prima'];
+        filteredNodes = esduData.global.filter(node => {
+          // Include all non-European locations
+          if (!isEuropeanLocation(node)) {
+            return true;
+          }
+          // Include major European partners in global view too
+          if (node.id && majorEuropeanIds.includes(node.id)) {
+            return true;
+          }
+          return false;
+        });
       }
       
       // For local view, include hub; for regional/global, include hub as well for context
@@ -717,25 +727,27 @@ ready(() => {
             map.setView([33.897, 35.478], 8, { animate: false });
           }
         } else if (view === 'regional') {
-          // Regional view: Show MENA region
+          // Regional view: Show MENA region + European connections (closer zoom)
           if (filteredNodes.length > 0) {
             const bounds = L.latLngBounds([esduData.hub.lat, esduData.hub.lon]);
             filteredNodes.forEach(node => {
               bounds.extend([node.lat, node.lon]);
             });
-            map.fitBounds(bounds, { padding: [80, 80], maxZoom: 5, animate: false });
+            // Regional view: closer zoom (maxZoom: 6) to show MENA + Europe more clearly
+            map.fitBounds(bounds, { padding: [60, 60], maxZoom: 6, animate: false });
           } else {
-            // Default MENA view if no nodes
-            map.setView([28.0, 35.0], 5, { animate: false });
+            // Default MENA + Europe view if no nodes
+            map.setView([35.0, 25.0], 5, { animate: false });
           }
         } else if (view === 'global') {
-          // Global view: Show world map with all global connections
+          // Global view: Show world map with all global connections (wider zoom)
           if (filteredNodes.length > 0) {
             const bounds = L.latLngBounds([esduData.hub.lat, esduData.hub.lon]);
             filteredNodes.forEach(node => {
               bounds.extend([node.lat, node.lon]);
             });
-            map.fitBounds(bounds, { padding: [90, 90], maxZoom: 2, animate: false });
+            // Global view: wider zoom (maxZoom: 2) to show worldwide connections
+            map.fitBounds(bounds, { padding: [100, 100], maxZoom: 2, animate: false });
           } else {
             // Default world view
             map.setView([20.0, 0.0], 2, { animate: false });
@@ -773,6 +785,68 @@ function activeIndex(nodes) {
   return idx;
 }
 
+// Image error handling - show fallback for missing images
+ready(() => {
+  // Handle all images on the page
+  const allImages = document.querySelectorAll('img');
+  
+  allImages.forEach(img => {
+    // Add error handler
+    img.addEventListener('error', function() {
+      // Mark as failed
+      this.classList.add('image-error');
+      this.style.display = 'none';
+      
+      // Create or show fallback
+      const container = this.parentElement;
+      if (container && !container.querySelector('.image-fallback')) {
+        // Create fallback div
+        const fallback = document.createElement('div');
+        fallback.className = 'image-fallback';
+        fallback.style.cssText = `
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          top: 0;
+          left: 0;
+          border-radius: inherit;
+          border: 1px solid rgba(132, 1, 50, 0.08);
+        `;
+        
+        // No striped pattern - clean elegant background
+        
+        // Insert fallback - for hero images, make sure it doesn't create extra space
+        if (container.classList.contains('hero-image-carousel') || container.classList.contains('hero-visual')) {
+          container.style.position = 'relative';
+          container.appendChild(fallback);
+        } else {
+          container.style.position = 'relative';
+          container.appendChild(fallback);
+        }
+      }
+    });
+    
+    // Also check if image loaded successfully
+    img.addEventListener('load', function() {
+      this.classList.remove('image-error');
+      this.style.display = '';
+      const fallback = this.parentElement?.querySelector('.image-fallback');
+      if (fallback) {
+        fallback.remove();
+      }
+    });
+    
+    // Pre-check images that might be broken
+    if (img.complete && img.naturalHeight === 0 && img.src) {
+      img.dispatchEvent(new Event('error'));
+    }
+  });
+});
+
 // Video fullscreen handling for better cross-platform support (for iframe embeds)
 ready(() => {
   const videoIframe = document.querySelector('.esdu-video-iframe');
@@ -802,36 +876,45 @@ ready(() => {
         img.classList.remove('active', 'fade-out', 'fade-in', 'zoom-in', 'zoom-out', 'slide-left', 'slide-right');
       });
       
-      // Apply fade-out to previous image
+      // Apply fade-out to previous image with smooth transition
       if (prevImg) {
         prevImg.classList.add('fade-out');
         setTimeout(() => {
-          prevImg.classList.remove('fade-out');
-        }, 2000);
+          prevImg.classList.remove('fade-out', 'active');
+        }, 1500);
       }
       
-      // Apply effect and show next image
+      // Apply effect and show next image with slight delay for smooth crossfade
       setTimeout(() => {
         nextImg.classList.add('active');
         
         switch(effect) {
           case 'fade':
             nextImg.classList.add('fade-in');
+            setTimeout(() => nextImg.classList.remove('fade-in'), 2000);
             break;
           case 'blur':
             nextImg.style.filter = 'blur(0px)';
+            nextImg.style.opacity = '1';
             break;
           case 'zoom':
             nextImg.classList.add('zoom-in');
-            setTimeout(() => nextImg.classList.add('zoom-out'), 2000);
+            setTimeout(() => {
+              nextImg.classList.remove('zoom-in');
+              nextImg.classList.add('zoom-out');
+              setTimeout(() => nextImg.classList.remove('zoom-out'), 1500);
+            }, 1500);
             break;
           case 'slide':
             const direction = Math.random() > 0.5 ? 'slide-left' : 'slide-right';
             nextImg.classList.add(direction);
-            setTimeout(() => nextImg.classList.remove(direction), 2000);
+            setTimeout(() => {
+              nextImg.classList.remove(direction);
+              nextImg.style.transform = 'translate(-50%, -50%)';
+            }, 1500);
             break;
         }
-      }, 100);
+      }, 200);
     }
     
     // Initialize first image
