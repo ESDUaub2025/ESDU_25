@@ -41,7 +41,7 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "proxima-nova", "Proxima Nova", "Montserrat", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
@@ -57,7 +57,7 @@ body {
 h1,h2,h3,h4,h5,h6 { 
   line-height: 1.2; 
   margin: 0 0 .5rem;
-  font-family: "proxima-nova", "Proxima Nova", "Montserrat", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 h1 { font-weight: 700; }
 p { margin: 0 0 1rem; color: var(--muted); }
@@ -220,7 +220,7 @@ a:hover { text-decoration: underline; }
 }
 
 .hero-main-title {
-  font-family: "proxima-nova", "Proxima Nova", "Montserrat", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: clamp(1.1rem, 2.2vw, 1.75rem);
   font-weight: 700;
   color: var(--brand-ink);
@@ -257,7 +257,7 @@ a:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 .esdu-letter {
-  font-family: "proxima-nova", "Proxima Nova", "Montserrat", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, sans-serif;
   font-weight: 900;
   color: var(--brand);
   font-size: clamp(3.5rem, 8vw, 6.5rem);
