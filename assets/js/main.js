@@ -70,6 +70,115 @@ ready(() => {
   }, { threshold: 0.15 });
   document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card').forEach(el => io.observe(el));
   
+  // 3D Tilt Effect for Donor Cards - Enhanced and faster
+  const donorCards = document.querySelectorAll('.donor-card');
+  
+  donorCards.forEach(card => {
+    let isHovering = false;
+    let currentRotationX = 0;
+    let currentRotationY = 0;
+    let targetRotationX = 0;
+    let targetRotationY = 0;
+    let animationFrame = null;
+    
+    // Ensure transform is controlled by JS, not CSS - remove transform from transition
+    card.style.transition = 'opacity 0.6s ease, box-shadow 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out';
+    // Set initial transform to ensure JS control
+    if (card.classList.contains('visible')) {
+      card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+    }
+    
+    const updateTransform = () => {
+      animationFrame = null;
+      
+      if (!isHovering) {
+        // Smoothly return to neutral
+        currentRotationX *= 0.85;
+        currentRotationY *= 0.85;
+        
+        if (Math.abs(currentRotationX) < 0.1 && Math.abs(currentRotationY) < 0.1) {
+          currentRotationX = 0;
+          currentRotationY = 0;
+          card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+          return;
+        }
+      } else {
+        // Smoothly interpolate to target (fast interpolation for responsiveness)
+        currentRotationX += (targetRotationX - currentRotationX) * 0.3;
+        currentRotationY += (targetRotationY - currentRotationY) * 0.3;
+      }
+      
+      // Apply 3D transform with lift
+      card.style.transform = `translateY(-12px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg) scale(1.02)`;
+      
+      if (isHovering || Math.abs(currentRotationX) > 0.1 || Math.abs(currentRotationY) > 0.1) {
+        animationFrame = requestAnimationFrame(updateTransform);
+      }
+    };
+    
+    const handleMouseMove = (e) => {
+      if (!isHovering || !card.classList.contains('visible')) return;
+      
+      const rect = card.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      
+      const deltaX = mouseX - centerX;
+      const deltaY = mouseY - centerY;
+      
+      // Calculate rotation angles (max 25 degrees for more noticeable effect)
+      const maxRotation = 25;
+      targetRotationY = (deltaX / (rect.width / 2)) * maxRotation;
+      targetRotationX = -(deltaY / (rect.height / 2)) * maxRotation;
+      
+      // Clamp values
+      targetRotationX = Math.max(-maxRotation, Math.min(maxRotation, targetRotationX));
+      targetRotationY = Math.max(-maxRotation, Math.min(maxRotation, targetRotationY));
+      
+      if (!animationFrame) {
+        updateTransform();
+      }
+    };
+    
+    const handleMouseEnter = (e) => {
+      if (!card.classList.contains('visible')) return;
+      isHovering = true;
+      // Trigger initial calculation on enter
+      handleMouseMove(e);
+      if (!animationFrame) {
+        updateTransform();
+      }
+    };
+    
+    const handleMouseLeave = () => {
+      isHovering = false;
+      targetRotationX = 0;
+      targetRotationY = 0;
+      if (!animationFrame) {
+        updateTransform();
+      }
+    };
+    
+    // Watch for when card becomes visible
+    const visibilityObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          if (card.classList.contains('visible') && !isHovering) {
+            card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+          }
+        }
+      });
+    });
+    visibilityObserver.observe(card, { attributes: true, attributeFilter: ['class'] });
+    
+    card.addEventListener('mousemove', handleMouseMove, { passive: true });
+    card.addEventListener('mouseenter', handleMouseEnter);
+    card.addEventListener('mouseleave', handleMouseLeave);
+  });
+  
   // Additional observers for sections and map
   const sectionIo = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible-fade-up'); });

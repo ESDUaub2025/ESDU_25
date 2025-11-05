@@ -196,9 +196,11 @@ a:hover { text-decoration: underline; }
 .hero-logo-top-left {
   position: absolute;
   top: 0;
-  left: 0;
-  z-index: 10;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
   padding: 1rem;
+  pointer-events: none;
 }
 
 .hero-logo-corner {
@@ -207,6 +209,7 @@ a:hover { text-decoration: underline; }
   height: auto;
   display: block;
   object-fit: contain;
+  pointer-events: auto;
 }
 
 @media (max-width: 700px) {
@@ -217,6 +220,30 @@ a:hover { text-decoration: underline; }
 
 .hero {
   position: relative;
+  overflow: visible;
+  padding-top: 0;
+}
+
+.hero-logo-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto clamp(1.5rem, 3vw, 3rem) auto;
+  padding: 0 1rem;
+}
+
+.hero-logo-main {
+  max-width: 100%;
+  width: clamp(200px, 40vw, 500px);
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .hero-logo-main {
+    width: clamp(180px, 70vw, 400px);
+  }
 }
 
 .hero-main-title {
@@ -1344,28 +1371,33 @@ img.image-error {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.25rem;
   padding: 1.5rem 0;
+  perspective: 1200px;
+  perspective-origin: center center;
 }
 
 .donor-card {
   position: relative;
-  background: linear-gradient(135deg, #fff, var(--tint-rose));
-  border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(214, 122, 143, 0.4), rgba(132, 1, 50, 0.25));
+  border: 1px solid rgba(132, 1, 50, 0.2);
   border-radius: 0.75rem;
   padding: 1.25rem 1rem;
-  box-shadow: var(--shadow);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(132, 1, 50, 0.15);
+  transition: opacity 0.6s ease, box-shadow 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out;
   text-align: center;
   min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: translateY(20px) scale(0.95);
+  transform: translateY(15px);
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .donor-card.visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0) rotateX(0) rotateY(0);
 }
 
 .donor-card a {
@@ -1382,29 +1414,31 @@ img.image-error {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--brand-ink);
-  transition: all 0.3s;
+  transition: color 0.15s ease;
   line-height: 1.4;
   text-align: center;
 }
 
-.donor-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(132, 1, 50, 0.2);
-  border-color: var(--brand);
-  background: linear-gradient(135deg, #fff, var(--brand-soft));
+.donor-card:not(.donor-card-idrc):hover {
+  box-shadow: 0 8px 24px rgba(132, 1, 50, 0.25);
+  border-color: rgba(132, 1, 50, 0.35);
+  background: linear-gradient(135deg, rgba(214, 122, 143, 0.5), rgba(132, 1, 50, 0.3));
   z-index: 5;
-  transition: all 0.3s ease;
 }
 
-.donor-card:hover span {
+.donor-card:not(.donor-card-idrc):hover span {
   color: var(--brand-ink);
 }
 
-/* IDRC Special Styling - Filled with Color */
+/* IDRC Special Styling - Dark red filled color (subtly more prominent) */
 .donor-card-idrc {
   background: linear-gradient(135deg, var(--brand), var(--brand-ink));
   border: 2px solid var(--brand-ink);
-  box-shadow: 0 8px 24px rgba(132, 1, 50, 0.3);
+  box-shadow: 0 8px 24px rgba(132, 1, 50, 0.35);
+  transition: opacity 0.6s ease, box-shadow 0.2s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .donor-card-idrc a {
@@ -1415,31 +1449,36 @@ img.image-error {
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-weight: 700;
+  transition: color 0.15s ease;
 }
 
 .donor-card-idrc:hover {
-  background: linear-gradient(135deg, var(--brand-ink), var(--brand));
-  box-shadow: 0 12px 32px rgba(132, 1, 50, 0.4);
-  border-color: var(--brand-ink);
+  box-shadow: 0 12px 32px rgba(132, 1, 50, 0.5);
+  /* No background or border color change on hover */
 }
 
-/* Staggered animation delays for scroll reveal */
-.donor-card:nth-child(1) { transition-delay: 0.05s; }
-.donor-card:nth-child(2) { transition-delay: 0.1s; }
-.donor-card:nth-child(3) { transition-delay: 0.15s; }
-.donor-card:nth-child(4) { transition-delay: 0.2s; }
-.donor-card:nth-child(5) { transition-delay: 0.25s; }
-.donor-card:nth-child(6) { transition-delay: 0.3s; }
-.donor-card:nth-child(7) { transition-delay: 0.35s; }
-.donor-card:nth-child(8) { transition-delay: 0.4s; }
-.donor-card:nth-child(9) { transition-delay: 0.45s; }
-.donor-card:nth-child(10) { transition-delay: 0.5s; }
-.donor-card:nth-child(11) { transition-delay: 0.55s; }
-.donor-card:nth-child(12) { transition-delay: 0.6s; }
-.donor-card:nth-child(13) { transition-delay: 0.65s; }
-.donor-card:nth-child(14) { transition-delay: 0.7s; }
-.donor-card:nth-child(15) { transition-delay: 0.75s; }
-.donor-card:nth-child(16) { transition-delay: 0.8s; }
+.donor-card-idrc:hover span,
+.donor-card-idrc:hover a {
+  color: #fff !important;
+}
+
+/* Staggered animation delays for scroll reveal - faster and smoother */
+.donor-card:nth-child(1) { transition-delay: 0.02s; }
+.donor-card:nth-child(2) { transition-delay: 0.04s; }
+.donor-card:nth-child(3) { transition-delay: 0.06s; }
+.donor-card:nth-child(4) { transition-delay: 0.08s; }
+.donor-card:nth-child(5) { transition-delay: 0.1s; }
+.donor-card:nth-child(6) { transition-delay: 0.12s; }
+.donor-card:nth-child(7) { transition-delay: 0.14s; }
+.donor-card:nth-child(8) { transition-delay: 0.16s; }
+.donor-card:nth-child(9) { transition-delay: 0.18s; }
+.donor-card:nth-child(10) { transition-delay: 0.2s; }
+.donor-card:nth-child(11) { transition-delay: 0.22s; }
+.donor-card:nth-child(12) { transition-delay: 0.24s; }
+.donor-card:nth-child(13) { transition-delay: 0.26s; }
+.donor-card:nth-child(14) { transition-delay: 0.28s; }
+.donor-card:nth-child(15) { transition-delay: 0.3s; }
+.donor-card:nth-child(16) { transition-delay: 0.32s; }
 
 /* Responsive Donor Grid */
 @media (max-width: 900px) {

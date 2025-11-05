@@ -547,6 +547,20 @@ const esduLocations = {
       projects: ['Building capacities of MENA Evaluators'],
       donor: 'IDRC'
     },
+    {
+      id: 'tehran',
+      name: 'Tehran',
+      title: 'Communication Practices - Iran',
+      desc: 'Communication Practices for Effective Research and Extension Systems (FAO). Regional training program.',
+      lat: 35.6892,
+      lon: 51.3890,
+      logo: null,
+      website: null,
+      category: 'network',
+      type: 'regional',
+      projects: ['Communication Practices'],
+      donor: 'FAO'
+    },
     // Gulf Countries - Additional coverage for complete MENA representation
     {
       id: 'riyadh-karianet',
@@ -607,6 +621,37 @@ const esduLocations = {
       initiative: 'KariaNet',
       projects: ['Regional Knowledge Sharing'],
       donors: ['IDRC', 'IFAD']
+    },
+    
+    // AFESD (Kuwait) - Arab Fund for Economic and Social Development
+    {
+      id: 'kuwait-afesd',
+      name: 'Kuwait',
+      title: 'AFESD',
+      desc: 'Arab Fund for Economic and Social Development. Project: Small Green Innovative Project secured by ESDU (2024)',
+      lat: 29.3759,
+      lon: 47.9774,
+      logo: null,
+      website: 'https://www.afesd.org',
+      category: 'donor',
+      type: 'regional',
+      projects: ['Small Green Innovative Project'],
+      donor: 'AFESD'
+    },
+    // Khalifa Award (Abu Dhabi, UAE)
+    {
+      id: 'abu-dhabi-khalifa',
+      name: 'Abu Dhabi',
+      title: 'Khalifa Award',
+      desc: 'Khalifa International Award for Innovation in Date Palm and Agricultural Development. CLIMAT project winner (2020), Urban Oasis renovation support',
+      lat: 24.4539,
+      lon: 54.3773,
+      logo: null,
+      website: 'https://www.khalifaaward.ae',
+      category: 'donor',
+      type: 'regional',
+      projects: ['CLIMAT Award', 'Urban Oasis'],
+      donor: 'Khalifa Award'
     }
   ],
   global: [
@@ -676,7 +721,7 @@ const esduLocations = {
       id: 'leusden-ruaf',
       name: 'Leusden',
       title: 'RUAF Foundation',
-      desc: 'Resource Centres on Urban Agriculture and Food Security. ESDU became 7th Center of RUAF in 2006/2007. Projects: Cities Farming for the Future, From Seed to Table, Multi-Stakeholder Action Planning',
+      desc: 'Resource Centres on Urban Agriculture and Food Security. ESDU became 7th Center of RUAF in 2007. Projects: Cities Farming for the Future, From Seed to Table, Multi-Stakeholder Action Planning',
       lat: 52.1307,
       lon: 5.4312,
       logo: null,
@@ -715,21 +760,6 @@ const esduLocations = {
       type: 'global',
       donor: 'UNDP'
     },
-    // AFESD (Kuwait)
-    {
-      id: 'kuwait-afesd',
-      name: 'Kuwait',
-      title: 'AFESD',
-      desc: 'Arab Fund for Economic and Social Development. Project: Small Green Innovative Project secured by ESDU (2024)',
-      lat: 29.3759,
-      lon: 47.9774,
-      logo: null,
-      website: 'https://www.afesd.org',
-      category: 'donor',
-      type: 'global',
-      projects: ['Small Green Innovative Project'],
-      donor: 'AFESD'
-    },
     // PRIMA (Barcelona, Spain)
     {
       id: 'barcelona-prima',
@@ -758,21 +788,6 @@ const esduLocations = {
       category: 'donor',
       type: 'global',
       donor: 'European Commission'
-    },
-    // Khalifa Award (Abu Dhabi, UAE)
-    {
-      id: 'abu-dhabi-khalifa',
-      name: 'Abu Dhabi',
-      title: 'Khalifa Award',
-      desc: 'Khalifa International Award for Innovation in Date Palm and Agricultural Development. CLIMAT project winner (2020), Urban Oasis renovation support',
-      lat: 24.4539,
-      lon: 54.3773,
-      logo: null,
-      website: 'https://www.khalifaaward.ae',
-      category: 'donor',
-      type: 'global',
-      projects: ['CLIMAT Award', 'Urban Oasis'],
-      donor: 'Khalifa Award'
     },
     // NEF - Near East Foundation (New York, USA)
     {
@@ -936,6 +951,229 @@ const esduLocations = {
       initiative: 'From Seed to Table',
       projects: ['Second Global From Seed to Table Training'],
       donor: 'RUAF'
+    },
+    
+    // Major Regional Network Hubs - Also shown in Global view for comprehensive outreach
+    {
+      id: 'amman-global',
+      name: 'Amman',
+      title: 'EvalMENA Network Hub',
+      desc: 'EvalMENA third general assembly hosted in Amman (2014). Regional evaluation network with 143 members from 22 countries. Project: Mainstreaming Evaluation Theory and Practice in MENA (IDRC)',
+      lat: 31.956,
+      lon: 35.945,
+      logo: null,
+      website: 'https://www.evalmena.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'EvalMENA',
+      projects: ['EvalMENA General Assembly 2014', 'Outcome Mapping', 'Mainstreaming Evaluation Theory'],
+      donor: 'IDRC'
+    },
+    {
+      id: 'cairo-global',
+      name: 'Cairo',
+      title: 'MENA Network Hub',
+      desc: 'Major regional hub for EvalMENA, KariaNet, and RUAFMENA networks. Projects: Outcome Mapping (IDRC), Building capacities of MENA Evaluators (IDRC), Communication for Development (FAO)',
+      lat: 30.044,
+      lon: 31.236,
+      logo: null,
+      website: 'https://www.evalmena.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'EvalMENA',
+      projects: ['Outcome Mapping', 'Building capacities of MENA Evaluators', 'Communication for Development'],
+      donors: ['IDRC', 'FAO']
+    },
+    {
+      id: 'abu-dhabi-global',
+      name: 'Abu Dhabi',
+      title: 'MENA Partnership Hub',
+      desc: 'EvalMENA network member and Khalifa Award location. Projects: Mainstreaming Evaluation Theory (IDRC), CLIMAT Award (2020)',
+      lat: 24.4539,
+      lon: 54.3773,
+      logo: null,
+      website: 'https://www.evalmena.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'EvalMENA',
+      projects: ['Mainstreaming Evaluation Theory', 'CLIMAT Award'],
+      donors: ['IDRC', 'Khalifa Award']
+    },
+    {
+      id: 'riyadh-global',
+      name: 'Riyadh',
+      title: 'KariaNet - Saudi Arabia',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 24.7136,
+      lon: 46.6753,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
+    },
+    {
+      id: 'doha-global',
+      name: 'Doha',
+      title: 'KariaNet - Qatar',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 25.2854,
+      lon: 51.5310,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
+    },
+    {
+      id: 'rabat-global',
+      name: 'Rabat',
+      title: 'MENA Network Hub - Morocco',
+      desc: 'EvalMENA and KariaNet network hub. Projects: Outcome Mapping (IDRC), Building capacities of MENA Evaluators (IDRC), Communication Practices (FAO)',
+      lat: 34.0209,
+      lon: -6.8416,
+      logo: null,
+      website: 'https://www.evalmena.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'EvalMENA',
+      projects: ['Outcome Mapping', 'Building capacities of MENA Evaluators', 'Communication Practices'],
+      donors: ['IDRC', 'FAO']
+    },
+    {
+      id: 'tunis-global',
+      name: 'Tunis',
+      title: 'MENA Network Hub - Tunisia',
+      desc: 'EvalMENA and KariaNet network hub. Projects: Outcome Mapping (IDRC), Building capacities of MENA Evaluators (IDRC), Training of Trainers on Urban Agriculture (IDRC)',
+      lat: 36.806,
+      lon: 10.181,
+      logo: null,
+      website: 'https://www.evalmena.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'EvalMENA',
+      projects: ['Outcome Mapping', 'Building capacities of MENA Evaluators', 'Training of Trainers on Urban Agriculture'],
+      donors: ['IDRC']
+    },
+    {
+      id: 'baghdad-global',
+      name: 'Baghdad',
+      title: 'KariaNet - Iraq',
+      desc: 'KariaNet knowledge sharing platform. Project: Iraq Partnership for Revitalizing Agricultural Higher Education and Development - AHEAD (USAID)',
+      lat: 33.3152,
+      lon: 44.3661,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'KariaNet',
+      projects: ['AHEAD - Agricultural Higher Education'],
+      donor: 'USAID'
+    },
+    {
+      id: 'ramallah-global',
+      name: 'Ramallah',
+      title: 'MENA Network Hub - Palestine',
+      desc: 'KariaNet and RUAFMENA network hub. Projects: Regional Training on Urban Agriculture (IDRC), Challenges on Urban Agriculture (IDRC), Communication for Development (FAO)',
+      lat: 31.9024,
+      lon: 35.2062,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'global',
+      initiative: 'KariaNet',
+      projects: ['Regional Training on Urban Agriculture', 'Challenges on Urban Agriculture', 'Communication for Development'],
+      donors: ['IDRC', 'FAO']
+    },
+    {
+      id: 'kuwait-global',
+      name: 'Kuwait',
+      title: 'AFESD',
+      desc: 'Arab Fund for Economic and Social Development. Project: Small Green Innovative Project secured by ESDU (2024)',
+      lat: 29.3759,
+      lon: 47.9774,
+      logo: null,
+      website: 'https://www.afesd.org',
+      category: 'donor',
+      type: 'global',
+      projects: ['Small Green Innovative Project'],
+      donor: 'AFESD'
+    },
+    
+    // R&D Partners - Research Collaboration Locations
+    {
+      id: 'montpellier-cirad',
+      name: 'Montpellier',
+      title: 'CIRAD - France',
+      desc: 'Agricultural Research for Development (CIRAD). Research collaboration on resilience of agropastoral systems in MENA.',
+      lat: 43.6108,
+      lon: 3.8767,
+      logo: null,
+      website: 'https://www.cirad.fr',
+      category: 'research',
+      type: 'global',
+      projects: ['Resilience of Agropastoral Systems'],
+      donor: 'CIRAD'
+    },
+    {
+      id: 'cordoba-research',
+      name: 'Córdoba',
+      title: 'University of Córdoba - Spain',
+      desc: 'Instituto de Sociología y Estudios Campesinos (ISEC). Research collaboration on alternative food systems.',
+      lat: 37.8882,
+      lon: -4.7794,
+      logo: null,
+      website: null,
+      category: 'research',
+      type: 'global',
+      projects: ['Alternative Food Systems'],
+      donor: 'University of Córdoba'
+    },
+    {
+      id: 'granada-research',
+      name: 'Granada',
+      title: 'University of Granada - Spain',
+      desc: 'Departamento de Urbanística y Ordenación del Territorio. Research collaboration on alternative food systems and territorial planning.',
+      lat: 37.1773,
+      lon: -3.5986,
+      logo: null,
+      website: null,
+      category: 'research',
+      type: 'global',
+      projects: ['Alternative Food Systems'],
+      donor: 'University of Granada'
+    },
+    {
+      id: 'denmark-daas',
+      name: 'Copenhagen',
+      title: 'DAAS - Denmark',
+      desc: 'Knowledge Center for Agriculture - Danish Agricultural Advisory Service. Research collaboration on organic agriculture.',
+      lat: 55.6761,
+      lon: 12.5683,
+      logo: null,
+      website: 'https://www.vfl.dk',
+      category: 'research',
+      type: 'global',
+      projects: ['Organic Agriculture'],
+      donor: 'DAAS'
+    },
+    {
+      id: 'germany-leibniz',
+      name: 'Müncheberg',
+      title: 'Leibniz Centre - Germany',
+      desc: 'Leibniz-Centre for Agricultural Landscape Research (ZALF). Research collaboration on sustainable land use and eco-initiatives.',
+      lat: 52.5078,
+      lon: 14.1303,
+      logo: null,
+      website: 'https://www.zalf.de',
+      category: 'research',
+      type: 'global',
+      projects: ['Sustainable Land Use', 'Eco-Initiatives'],
+      donor: 'Leibniz Centre'
     }
   ]
 };
