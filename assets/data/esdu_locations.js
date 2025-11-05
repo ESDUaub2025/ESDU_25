@@ -546,6 +546,67 @@ const esduLocations = {
       type: 'regional',
       projects: ['Building capacities of MENA Evaluators'],
       donor: 'IDRC'
+    },
+    // Gulf Countries - Additional coverage for complete MENA representation
+    {
+      id: 'riyadh-karianet',
+      name: 'Riyadh',
+      title: 'KariaNet - Saudi Arabia',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 24.7136,
+      lon: 46.6753,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'regional',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
+    },
+    {
+      id: 'doha-karianet',
+      name: 'Doha',
+      title: 'KariaNet - Qatar',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 25.2854,
+      lon: 51.5310,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'regional',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
+    },
+    {
+      id: 'manama-karianet',
+      name: 'Manama',
+      title: 'KariaNet - Bahrain',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 26.0667,
+      lon: 50.5577,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'regional',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
+    },
+    {
+      id: 'muscat-karianet',
+      name: 'Muscat',
+      title: 'KariaNet - Oman',
+      desc: 'KariaNet knowledge sharing platform. Regional agricultural and natural resources knowledge exchange.',
+      lat: 23.5859,
+      lon: 58.4059,
+      logo: null,
+      website: 'https://www.karianet.org',
+      category: 'network',
+      type: 'regional',
+      initiative: 'KariaNet',
+      projects: ['Regional Knowledge Sharing'],
+      donors: ['IDRC', 'IFAD']
     }
   ],
   global: [

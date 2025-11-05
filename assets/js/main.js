@@ -244,12 +244,34 @@ ready(() => {
       dragging: true
     }).setView([33.897, 35.478], 8); // Start at Lebanon view
 
-    // Add Carto Light basemap
+    // Add Carto Light basemap with labels (less prominent)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(map);
+    
+    // Add CSS to reduce prominence of country labels and hide specific ones
+    const style = document.createElement('style');
+    style.textContent = `
+      .leaflet-container .leaflet-pane {
+        position: relative;
+      }
+      /* Make map labels less prominent */
+      .leaflet-container .leaflet-pane svg text {
+        opacity: 0.3;
+        font-size: 10px !important;
+      }
+      /* Hide specific country names that might interfere - adjust as needed */
+      .leaflet-container .leaflet-pane svg text[text-anchor="middle"] {
+        opacity: 0.2;
+      }
+      /* On hover/interaction, labels become more visible */
+      .leaflet-container:hover .leaflet-pane svg text {
+        opacity: 0.5;
+      }
+    `;
+    document.head.appendChild(style);
 
     // Use esduLocations data from imported script
     // Filter out RUAF-related locations
@@ -417,21 +439,70 @@ ready(() => {
       });
     }
 
+    // Helper function to identify European locations
+    function isEuropeanLocation(node) {
+      // European location IDs (Mediterranean and European connections)
+      const europeanIds = [
+        'rome-fao', 'rome-ifad', 'rome-wfp', // Rome, Italy (FAO, IFAD, WFP)
+        'brussels-eu', // Brussels, Belgium (European Commission)
+        'barcelona-prima', // Barcelona, Spain (PRIMA)
+        'amsterdam-porticus', 'amsterdam-seed-to-table', // Amsterdam, Netherlands
+        'leusden-ruaf' // Leusden, Netherlands (RUAF Foundation)
+      ];
+      
+      // Also check for European locations by name patterns
+      const europeanNames = ['rome', 'brussels', 'barcelona', 'amsterdam', 'leusden'];
+      if (node.name && europeanNames.some(name => node.name.toLowerCase().includes(name))) {
+        return true;
+      }
+      
+      // Check by ID first
+      if (europeanIds.includes(node.id)) {
+        return true;
+      }
+      
+      // Also check by coordinates (Mediterranean Europe: 35-50°N, -10-40°E)
+      const lat = node.lat;
+      const lon = node.lon;
+      if (lat >= 35 && lat <= 50 && lon >= -10 && lon <= 40) {
+        // Additional check: exclude MENA countries (Arab countries)
+        const menaCountryNames = ['beirut', 'arsal', 'baalbek', 'yammouneh', 'zahle', 'nabatieh', 
+          'saida', 'akkar', 'shouf', 'hasbaya', 'cairo', 'amman', 'damascus', 'baghdad', 
+          'ramallah', 'rabat', 'tunis', 'algiers', 'sanaa', 'riyadh', 'doha', 'manama', 
+          'muscat', 'abu-dhabi', 'kuwait'];
+        if (!menaCountryNames.some(name => node.id && node.id.includes(name))) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
     // Tab switching for local/regional/global views
     let currentView = 'local';
     
     function switchView(view) {
       currentView = view;
       
-      // Filter nodes based on view
+      // Filter nodes based on view - ensure local only shows Lebanon points
       let filteredNodes = [];
       if (view === 'local') {
-        filteredNodes = esduData.local;
+        // Local view: Only Lebanon locations (type: 'local')
+        filteredNodes = esduData.local.filter(node => node.type === 'local');
+        // Include hub for local view
       } else if (view === 'regional') {
-        filteredNodes = esduData.regional;
+        // Regional view: MENA region locations + European connections
+        const menaNodes = esduData.regional.filter(node => node.type === 'regional');
+        const europeanNodes = esduData.global.filter(node => isEuropeanLocation(node));
+        filteredNodes = [...menaNodes, ...europeanNodes];
       } else if (view === 'global') {
-        filteredNodes = esduData.global;
+        // Global view: International locations (excluding European ones shown in regional)
+        filteredNodes = esduData.global.filter(node => 
+          node.type === 'global' && !isEuropeanLocation(node)
+        );
       }
+      
+      // For local view, include hub; for regional/global, include hub as well for context
       const filteredData = { hub: esduData.hub, nodes: filteredNodes };
       
       // Update UI
@@ -443,8 +514,17 @@ ready(() => {
       // This ensures markers are positioned correctly from the start
       const setViewAndRender = () => {
         if (view === 'local') {
-          // Local view: Show only Lebanon
-          map.setView([33.897, 35.478], 8, { animate: false }); // No animation to ensure immediate positioning
+          // Local view: Show only Lebanon - zoomed in view
+          if (filteredNodes.length > 0) {
+            const bounds = L.latLngBounds([esduData.hub.lat, esduData.hub.lon]);
+            filteredNodes.forEach(node => {
+              bounds.extend([node.lat, node.lon]);
+            });
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 8, animate: false });
+          } else {
+            // Default Lebanon view
+            map.setView([33.897, 35.478], 8, { animate: false });
+          }
         } else if (view === 'regional') {
           // Regional view: Show MENA region
           if (filteredNodes.length > 0) {
@@ -501,3 +581,93 @@ function activeIndex(nodes) {
   });
   return idx;
 }
+
+// Video fullscreen handling for better cross-platform support
+ready(() => {
+  const video = document.querySelector('.esdu-video');
+  if (video) {
+    // Handle fullscreen change events
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement || document.webkitFullscreenElement || 
+          document.mozFullScreenElement || document.msFullscreenElement) {
+        // In fullscreen, ensure video shows completely
+        video.style.objectFit = 'contain';
+        video.style.width = '100%';
+        video.style.height = '100%';
+      } else {
+        // Exit fullscreen, restore normal view
+        video.style.objectFit = 'contain';
+      }
+    };
+
+    // Listen for fullscreen changes (cross-browser)
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+  }
+
+  // Hero Image Carousel with rotating effects
+  const heroImages = document.querySelectorAll('.hero-image');
+  if (heroImages.length > 0) {
+    let currentIndex = 0;
+    const effects = ['fade', 'blur', 'zoom', 'slide'];
+    
+    function getRandomEffect() {
+      return effects[Math.floor(Math.random() * effects.length)];
+    }
+    
+    function rotateHeroImages() {
+      const previousIndex = currentIndex;
+      currentIndex = (currentIndex + 1) % heroImages.length;
+      const effect = getRandomEffect();
+      
+      const prevImg = heroImages[previousIndex];
+      const nextImg = heroImages[currentIndex];
+      
+      // Remove all effect classes
+      heroImages.forEach(img => {
+        img.classList.remove('active', 'fade-out', 'fade-in', 'zoom-in', 'zoom-out', 'slide-left', 'slide-right');
+      });
+      
+      // Apply fade-out to previous image
+      if (prevImg) {
+        prevImg.classList.add('fade-out');
+        setTimeout(() => {
+          prevImg.classList.remove('fade-out');
+        }, 2000);
+      }
+      
+      // Apply effect and show next image
+      setTimeout(() => {
+        nextImg.classList.add('active');
+        
+        switch(effect) {
+          case 'fade':
+            nextImg.classList.add('fade-in');
+            break;
+          case 'blur':
+            nextImg.style.filter = 'blur(0px)';
+            break;
+          case 'zoom':
+            nextImg.classList.add('zoom-in');
+            setTimeout(() => nextImg.classList.add('zoom-out'), 2000);
+            break;
+          case 'slide':
+            const direction = Math.random() > 0.5 ? 'slide-left' : 'slide-right';
+            nextImg.classList.add(direction);
+            setTimeout(() => nextImg.classList.remove(direction), 2000);
+            break;
+        }
+      }, 100);
+    }
+    
+    // Initialize first image
+    if (heroImages[0]) {
+      heroImages[0].classList.add('active');
+    }
+    
+    // Rotate images every 5 seconds
+    setInterval(rotateHeroImages, 5000);
+  }
+});
