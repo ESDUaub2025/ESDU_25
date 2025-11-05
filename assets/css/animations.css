@@ -19,7 +19,11 @@
 /* Section fade-up on scroll - only affects sections without initial visibility */
 .section:not(.visible):not(.visible-fade-up):not(.hero) {
   opacity: 0;
+  -webkit-transform: translateY(30px);
+  -ms-transform: translateY(30px);
   transform: translateY(30px);
+  -webkit-transition: opacity var(--anim-duration-normal) var(--anim-ease-smooth),
+              -webkit-transform var(--anim-duration-normal) var(--anim-ease-smooth);
   transition: opacity var(--anim-duration-normal) var(--anim-ease-smooth),
               transform var(--anim-duration-normal) var(--anim-ease-smooth);
 }

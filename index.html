@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>ESDU: Exploring Solutions, Defining Uncertainties – 25 Years of Sustainable Community Development</title>
     <meta name="description" content="ESDU: Exploring Solutions, Defining Uncertainties – 25 years advancing community-led rural development, food security, and sustainable livelihoods across the region." />
     <link rel="canonical" href="https://example.org/esdu" />
@@ -342,10 +343,16 @@
             <h2>Timeline</h2>
             <p>25 years of innovation, impact, and transformation from grassroots research to regional leadership.</p>
           </header>
-          <div class="timeline-track" data-timeline>
-            <div class="rail" aria-hidden="true"></div>
-            <div class="progress" aria-hidden="true"></div>
-            <!-- JS populates years & milestones -->
+          <div class="timeline-wrapper">
+            <div class="timeline-track" data-timeline>
+              <div class="rail" aria-hidden="true"></div>
+              <div class="progress" aria-hidden="true"></div>
+              <!-- JS populates years & milestones -->
+            </div>
+            <div class="timeline-controls" aria-label="Timeline navigation">
+              <button class="timeline-prev" aria-label="Previous milestone">‹</button>
+              <button class="timeline-next" aria-label="Next milestone">›</button>
+            </div>
           </div>
         </div>
       </section>

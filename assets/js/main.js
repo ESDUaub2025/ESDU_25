@@ -6,20 +6,52 @@ function ready(fn) {
   else document.addEventListener('DOMContentLoaded', fn);
 }
 
+// Cross-browser compatibility helpers
+function getScrollPosition() {
+  return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+}
+
+// Polyfill for IntersectionObserver (basic fallback)
+if (typeof IntersectionObserver === 'undefined') {
+  window.IntersectionObserver = function(callback, options) {
+    this.callback = callback;
+    this.options = options || {};
+    this.observe = function(element) {
+      // Simple fallback: trigger immediately after a short delay
+      setTimeout(() => {
+        this.callback([{ isIntersecting: true, target: element }], this);
+      }, 100);
+    };
+    this.unobserve = function() {};
+    this.disconnect = function() {};
+  };
+}
+
 ready(() => {
   // Year in footer
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  // Header shrink on scroll
+  // Header shrink on scroll (cross-browser compatible)
   const header = document.querySelector('.site-header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      header?.classList.add('scrolled');
-    } else {
-      header?.classList.remove('scrolled');
+  if (header) {
+    const handleScroll = () => {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if (scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    };
+    
+    // Use passive listener for better performance
+    const scrollOptions = { passive: true };
+    if (window.addEventListener) {
+      window.addEventListener('scroll', handleScroll, scrollOptions);
+    } else if (window.attachEvent) {
+      window.attachEvent('onscroll', handleScroll);
     }
-  });
+  }
 
   // Mobile nav toggle
   const nav = document.querySelector('.site-nav');
@@ -136,7 +168,7 @@ ready(() => {
     setInterval(() => { index = (index + 1) % slides.length; render(); }, 4500);
   }
 
-  // Timeline – curated milestones from extracted PDFs
+  // Timeline – curated milestones with manual navigation
   const timeline = document.querySelector('[data-timeline]');
   if (timeline) {
     const milestones = [
@@ -163,6 +195,8 @@ ready(() => {
     milestones.forEach(m => {
       const year = document.createElement('div');
       year.className = 'year';
+      year.setAttribute('tabindex', '0');
+      year.setAttribute('role', 'button');
       const h = document.createElement('h4');
       h.textContent = String(m.year);
       const p = document.createElement('p');
@@ -174,25 +208,182 @@ ready(() => {
     const rail = timeline.querySelector('.rail');
     const progress = timeline.querySelector('.progress');
     const items = Array.from(timeline.querySelectorAll('.year'));
-    let ti = 0;
+    let currentIndex = 0;
+    const prevBtn = document.querySelector('.timeline-prev');
+    const nextBtn = document.querySelector('.timeline-next');
 
     function setActive(i) {
+      if (i < 0 || i >= items.length) return;
+      
+      currentIndex = i;
       items.forEach((el, idx) => el.classList.toggle('active', idx === i));
+      
+      // Update progress bar
       const pct = (i + 1) / items.length;
       const railWidth = rail.getBoundingClientRect().width;
       progress.style.width = `${Math.max(0, Math.floor(railWidth * pct))}px`;
-      // Smoothly scroll the timeline container horizontally without affecting page scroll
-      const container = timeline; // .timeline-track element
+      
+      // Smoothly scroll the timeline container horizontally
+      const container = timeline;
       const item = items[i];
-      const targetLeft = item.offsetLeft - (container.clientWidth / 2) + (item.clientWidth / 2);
-      container.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+      if (item && container) {
+        const targetLeft = item.offsetLeft - (container.clientWidth / 2) + (item.clientWidth / 2);
+        // Use requestAnimationFrame for better cross-browser support
+        const scrollToPosition = () => {
+          const target = Math.max(0, targetLeft);
+          
+          // Modern browsers with smooth scroll
+          if (container.scrollTo && typeof container.scrollTo === 'function') {
+            try {
+              container.scrollTo({ left: target, behavior: 'smooth' });
+              return;
+            } catch (e) {
+              // Fallback if smooth scroll fails - continue to animation
+            }
+          }
+          
+          // Fallback for older browsers - smooth scroll polyfill
+          const start = container.scrollLeft;
+          const distance = target - start;
+          
+          // If already at target, no need to animate
+          if (Math.abs(distance) < 1) {
+            container.scrollLeft = target;
+            return;
+          }
+          
+          const duration = 300;
+          let startTime = null;
+          
+          function animateScroll(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            
+            // Easing function (ease-in-out)
+            const ease = progress < 0.5 
+              ? 2 * progress * progress 
+              : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+            
+            container.scrollLeft = start + (distance * ease);
+            
+            if (timeElapsed < duration) {
+              if (window.requestAnimationFrame) {
+                requestAnimationFrame(animateScroll);
+              } else if (window.webkitRequestAnimationFrame) {
+                window.webkitRequestAnimationFrame(animateScroll);
+              } else if (window.mozRequestAnimationFrame) {
+                window.mozRequestAnimationFrame(animateScroll);
+              } else {
+                // Final fallback: instant scroll
+                container.scrollLeft = target;
+              }
+            } else {
+              container.scrollLeft = target;
+            }
+          }
+          
+          if (window.requestAnimationFrame) {
+            requestAnimationFrame(animateScroll);
+          } else if (window.webkitRequestAnimationFrame) {
+            window.webkitRequestAnimationFrame(animateScroll);
+          } else if (window.mozRequestAnimationFrame) {
+            window.mozRequestAnimationFrame(animateScroll);
+          } else {
+            // Final fallback for very old browsers
+            container.scrollLeft = target;
+          }
+        };
+        
+        if (window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame) {
+          if (window.requestAnimationFrame) {
+            requestAnimationFrame(scrollToPosition);
+          } else if (window.webkitRequestAnimationFrame) {
+            window.webkitRequestAnimationFrame(scrollToPosition);
+          } else {
+            window.mozRequestAnimationFrame(scrollToPosition);
+          }
+        } else {
+          scrollToPosition();
+        }
+      }
+      
+      // Update button states
+      if (prevBtn) {
+        prevBtn.disabled = i === 0;
+        prevBtn.setAttribute('aria-disabled', i === 0);
+      }
+      if (nextBtn) {
+        nextBtn.disabled = i === items.length - 1;
+        nextBtn.setAttribute('aria-disabled', i === items.length - 1);
+      }
     }
 
+    // Click handlers for timeline items
+    items.forEach((item, index) => {
+      item.addEventListener('click', () => setActive(index));
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setActive(index);
+        }
+      });
+    });
+
+    // Navigation button handlers
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) setActive(currentIndex - 1);
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < items.length - 1) setActive(currentIndex + 1);
+      });
+    }
+
+    // Keyboard navigation
+    timeline.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        e.preventDefault();
+        setActive(currentIndex - 1);
+      } else if (e.key === 'ArrowRight' && currentIndex < items.length - 1) {
+        e.preventDefault();
+        setActive(currentIndex + 1);
+      }
+    });
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    timeline.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    timeline.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0 && currentIndex < items.length - 1) {
+          // Swipe left - go to next
+          setActive(currentIndex + 1);
+        } else if (diff < 0 && currentIndex > 0) {
+          // Swipe right - go to previous
+          setActive(currentIndex - 1);
+        }
+      }
+    }
+
+    // Initialize first item
     setActive(0);
-    setInterval(() => {
-      ti = (ti + 1) % items.length;
-      setActive(ti);
-    }, 2600);
     
     // Observe timeline items for animations after they're created
     setTimeout(() => {
