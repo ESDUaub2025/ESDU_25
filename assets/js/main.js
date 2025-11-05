@@ -773,30 +773,11 @@ function activeIndex(nodes) {
   return idx;
 }
 
-// Video fullscreen handling for better cross-platform support
+// Video fullscreen handling for better cross-platform support (for iframe embeds)
 ready(() => {
-  const video = document.querySelector('.esdu-video');
-  if (video) {
-    // Handle fullscreen change events
-    const handleFullscreenChange = () => {
-      if (document.fullscreenElement || document.webkitFullscreenElement || 
-          document.mozFullScreenElement || document.msFullscreenElement) {
-        // In fullscreen, ensure video shows completely
-        video.style.objectFit = 'contain';
-        video.style.width = '100%';
-        video.style.height = '100%';
-      } else {
-        // Exit fullscreen, restore normal view
-        video.style.objectFit = 'contain';
-      }
-    };
-
-    // Listen for fullscreen changes (cross-browser)
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-  }
+  const videoIframe = document.querySelector('.esdu-video-iframe');
+  // Note: Google Drive iframe handles fullscreen internally, no additional JS needed
+  // The iframe's allowfullscreen attribute enables native fullscreen support
 
   // Hero Image Carousel with rotating effects
   const heroImages = document.querySelectorAll('.hero-image');
