@@ -224,7 +224,7 @@ ready(() => {
     if (dots[0]) dots[0].setAttribute('aria-current', 'true');
   }
 
-  // ESDU at Work – simple carousel
+  // ESDU at Work – simple carousel with pause-on-interaction
   const carousel = document.querySelector('[data-carousel]');
   if (carousel) {
     const track = carousel.querySelector('.carousel-track');
@@ -233,11 +233,19 @@ ready(() => {
     const next = carousel.querySelector('.carousel-next');
     const dotsWrap = carousel.querySelector('.carousel-dots');
     let index = 0;
+    let autoAdvanceInterval = null;
+    let pauseTimer = null;
+    const PAUSE_DURATION = 30000; // 30 seconds in milliseconds
+    const AUTO_ADVANCE_INTERVAL = 4500; // 4.5 seconds
 
     // Dots
     slides.forEach((_, i) => {
       const b = document.createElement('button');
-      b.addEventListener('click', () => { index = i; render(); });
+      b.addEventListener('click', () => { 
+        index = i; 
+        render(); 
+        pauseAutoAdvance();
+      });
       dotsWrap.appendChild(b);
     });
 
@@ -257,27 +265,73 @@ ready(() => {
       applyCoverflow();
     }
 
-    prev.addEventListener('click', () => { index = (index - 1 + slides.length) % slides.length; render(); });
-    next.addEventListener('click', () => { index = (index + 1) % slides.length; render(); });
+    // Pause auto-advance and reset timer
+    function pauseAutoAdvance() {
+      // Clear existing timers
+      if (autoAdvanceInterval) {
+        clearInterval(autoAdvanceInterval);
+        autoAdvanceInterval = null;
+      }
+      if (pauseTimer) {
+        clearTimeout(pauseTimer);
+        pauseTimer = null;
+      }
+      
+      // Set timer to resume after 30 seconds
+      pauseTimer = setTimeout(() => {
+        resumeAutoAdvance();
+      }, PAUSE_DURATION);
+    }
+
+    // Resume auto-advance
+    function resumeAutoAdvance() {
+      if (autoAdvanceInterval) return; // Already running
+      
+      autoAdvanceInterval = setInterval(() => {
+        index = (index + 1) % slides.length;
+        render();
+      }, AUTO_ADVANCE_INTERVAL);
+    }
+
+    // Manual navigation handlers
+    const handleManualNavigation = (direction) => {
+      if (direction === 'prev') {
+        index = (index - 1 + slides.length) % slides.length;
+      } else {
+        index = (index + 1) % slides.length;
+      }
+      render();
+      pauseAutoAdvance(); // Pause when user manually navigates
+    };
+
+    prev.addEventListener('click', () => handleManualNavigation('prev'));
+    next.addEventListener('click', () => handleManualNavigation('next'));
 
     // Keyboard and swipe
     carousel.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') prev.click();
-      if (e.key === 'ArrowRight') next.click();
+      if (e.key === 'ArrowLeft') {
+        handleManualNavigation('prev');
+      } else if (e.key === 'ArrowRight') {
+        handleManualNavigation('next');
+      }
     });
     let startX = 0;
     track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
     track.addEventListener('touchend', (e) => {
       const dx = e.changedTouches[0].clientX - startX;
-      if (dx > 40) prev.click(); else if (dx < -40) next.click();
+      if (dx > 40) {
+        handleManualNavigation('prev');
+      } else if (dx < -40) {
+        handleManualNavigation('next');
+      }
     });
 
     render();
-    // auto-advance
-    setInterval(() => { index = (index + 1) % slides.length; render(); }, 4500);
+    // Start auto-advance initially
+    resumeAutoAdvance();
   }
 
-  // Timeline – curated milestones with manual navigation
+  // Timeline – curated milestones with auto-scroll and pause-on-interaction
   const timeline = document.querySelector('[data-timeline]');
   if (timeline) {
     const milestones = [
@@ -320,8 +374,19 @@ ready(() => {
     let currentIndex = 0;
     const prevBtn = document.querySelector('.timeline-prev');
     const nextBtn = document.querySelector('.timeline-next');
+    let autoAdvanceInterval = null;
+    let pauseTimer = null;
+    const PAUSE_DURATION = 30000; // 30 seconds in milliseconds
+    const AUTO_ADVANCE_INTERVAL = 4500; // 4.5 seconds
 
-    function setActive(i) {
+    function setActive(i, isManual = false) {
+      // Handle looping: if at end, loop back to start
+      if (i >= items.length) {
+        i = 0; // Loop back to start
+      } else if (i < 0) {
+        i = items.length - 1; // Loop to end if going backwards from start
+      }
+      
       if (i < 0 || i >= items.length) return;
       
       currentIndex = i;
@@ -417,24 +482,58 @@ ready(() => {
         }
       }
       
-      // Update button states
+      // Update button states - remove disabled state since we're looping
       if (prevBtn) {
-        prevBtn.disabled = i === 0;
-        prevBtn.setAttribute('aria-disabled', i === 0);
+        prevBtn.disabled = false;
+        prevBtn.setAttribute('aria-disabled', 'false');
       }
       if (nextBtn) {
-        nextBtn.disabled = i === items.length - 1;
-        nextBtn.setAttribute('aria-disabled', i === items.length - 1);
+        nextBtn.disabled = false;
+        nextBtn.setAttribute('aria-disabled', 'false');
       }
+
+      // If manual interaction, pause auto-advance
+      if (isManual) {
+        pauseAutoAdvance();
+      }
+    }
+
+    // Pause auto-advance and reset timer
+    function pauseAutoAdvance() {
+      // Clear existing timers
+      if (autoAdvanceInterval) {
+        clearInterval(autoAdvanceInterval);
+        autoAdvanceInterval = null;
+      }
+      if (pauseTimer) {
+        clearTimeout(pauseTimer);
+        pauseTimer = null;
+      }
+      
+      // Set timer to resume after 30 seconds
+      pauseTimer = setTimeout(() => {
+        resumeAutoAdvance();
+      }, PAUSE_DURATION);
+    }
+
+    // Resume auto-advance
+    function resumeAutoAdvance() {
+      if (autoAdvanceInterval) return; // Already running
+      
+      autoAdvanceInterval = setInterval(() => {
+        // Auto-advance to next item (will loop back to start when reaching end)
+        const nextIndex = currentIndex + 1;
+        setActive(nextIndex, false); // false = not manual, so don't pause
+      }, AUTO_ADVANCE_INTERVAL);
     }
 
     // Click handlers for timeline items
     items.forEach((item, index) => {
-      item.addEventListener('click', () => setActive(index));
+      item.addEventListener('click', () => setActive(index, true));
       item.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          setActive(index);
+          setActive(index, true);
         }
       });
     });
@@ -442,24 +541,24 @@ ready(() => {
     // Navigation button handlers
     if (prevBtn) {
       prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) setActive(currentIndex - 1);
+        setActive(currentIndex - 1, true);
       });
     }
     
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
-        if (currentIndex < items.length - 1) setActive(currentIndex + 1);
+        setActive(currentIndex + 1, true);
       });
     }
 
     // Keyboard navigation
     timeline.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+      if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setActive(currentIndex - 1);
-      } else if (e.key === 'ArrowRight' && currentIndex < items.length - 1) {
+        setActive(currentIndex - 1, true);
+      } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setActive(currentIndex + 1);
+        setActive(currentIndex + 1, true);
       }
     });
 
@@ -481,18 +580,21 @@ ready(() => {
       const diff = touchStartX - touchEndX;
       
       if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0 && currentIndex < items.length - 1) {
+        if (diff > 0) {
           // Swipe left - go to next
-          setActive(currentIndex + 1);
-        } else if (diff < 0 && currentIndex > 0) {
+          setActive(currentIndex + 1, true);
+        } else {
           // Swipe right - go to previous
-          setActive(currentIndex - 1);
+          setActive(currentIndex - 1, true);
         }
       }
     }
 
     // Initialize first item
-    setActive(0);
+    setActive(0, false);
+    
+    // Start auto-advance
+    resumeAutoAdvance();
     
     // Observe timeline items for animations after they're created
     setTimeout(() => {

@@ -402,6 +402,36 @@ img.image-error {
 
 /* Hero image carousel already defined above */
 
+/* Image Placeholder - Coming Soon */
+.image-placeholder {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--tint-rose), var(--tint-gray));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 2rem;
+  border: 2px dashed var(--line);
+}
+
+.image-placeholder::before {
+  content: "Coming Soon";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--brand-soft);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
 .slide-image,
 .card-image,
 .kotl-image,
@@ -476,6 +506,17 @@ img.image-error {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(132, 1, 50, 0.06);
   padding: 3px;
+}
+
+.slide-image .image-placeholder,
+.card-image .image-placeholder,
+.kotl-image .image-placeholder,
+.initiative-image .image-placeholder,
+.goal-image .image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0.25rem;
 }
 
 /* Ensure fallback shows when image fails */
@@ -945,6 +986,61 @@ img.image-error {
   /* Fallback for browsers that don't support aspect-ratio */
   padding-bottom: 56.25%; /* 16:9 ratio */
   height: 0;
+}
+
+/* Video Poster/Thumbnail */
+.video-poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: var(--tint-gray);
+  z-index: 2;
+}
+
+.video-poster .video-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-play-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.video-poster:hover .video-play-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.video-play-overlay .play-icon {
+  width: 80px;
+  height: 80px;
+  color: white;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.video-poster:hover .play-icon {
+  transform: scale(1.1);
+}
+
+/* Hide poster when video is playing */
+.video-wrapper.has-video .video-poster {
+  display: none;
 }
 
 .video-wrapper > .esdu-video {
