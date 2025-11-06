@@ -28,6 +28,11 @@
     <!-- Leaflet CSS for map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
 
+    <!-- Preload critical images for faster loading -->
+    <link rel="preload" as="image" href="./assets/images/hero-0.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="./assets/images/ESDU 25th Anniversary _ Logo _ Final-05.png" />
+    <link rel="preload" as="image" href="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" />
+
     <link rel="stylesheet" href="./assets/css/styles.css" />
     <link rel="stylesheet" href="./assets/css/animations.css" />
   </head>
@@ -36,7 +41,7 @@
     <header class="site-header" role="banner">
       <div class="container header-inner">
         <a href="#home" class="brand" aria-label="ESDU home">
-          <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-05.png" alt="ESDU 25th Anniversary Logo" class="brand-mark" aria-hidden="true" />
+          <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-05.png" alt="ESDU 25th Anniversary Logo" class="brand-mark" aria-hidden="true" decoding="async" />
           <span class="brand-text">
             <span class="brand-init">ESDU</span>
             <span class="brand-expanded">
@@ -68,7 +73,7 @@
       <section id="home" class="section hero" aria-label="ESDU Hero">
         <div class="container">
           <div class="hero-logo-center">
-            <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" alt="ESDU 25th Anniversary Logo" class="hero-logo-main" />
+            <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" alt="ESDU 25th Anniversary Logo" class="hero-logo-main" decoding="async" />
           </div>
           <h2 class="hero-main-title">Exploring Solutions, Defying Uncertainties</h2>
           <h2 class="hero-main-title hero-main-title-second">25 Years of Sustainable Community Development</h2>
@@ -110,7 +115,7 @@
           </div>
           <div class="hero-visual" aria-hidden="true">
             <div class="hero-image-carousel">
-              <img src="./assets/images/hero-0.jpg" alt="ESDU Women Keepers of the Land" class="hero-image active" />
+              <img src="./assets/images/hero-0.jpg" alt="ESDU Women Keepers of the Land" class="hero-image active" fetchpriority="high" decoding="async" />
               <img src="./assets/images/hero-1.jpg" alt="ESDU Community Impact" class="hero-image" loading="lazy" />
               <img src="./assets/images/hero-2.jpg" alt="ESDU Research & Innovation" class="hero-image" loading="lazy" />
               <img src="./assets/images/hero-3.JPG" alt="ESDU Sustainable Development" class="hero-image" loading="lazy" />
