@@ -342,7 +342,7 @@ ready(() => {
       { year: 2005, text: 'IFAD-NEMTA program: Agricultural management training across MENA' },
       { year: 2006, text: 'ESDU becomes 7th Center of RUAF (Resource Centres on Urban Agriculture)' },
       { year: 2007, text: 'Technology transfer: Yammouneh/Deir el Ahmar extension project' },
-      { year: 2012, text: 'First AUB university budget allocation; 5,000+ actors trained to date' },
+      { year: 2012, text: 'First AUB university budget allocation' },
       { year: 2013, text: 'Food Heritage Foundation (FHF) established to conserve traditional food heritage' },
       { year: 2014, text: 'RCODE master\'s program hosting; EvalMENA third general assembly in Amman' },
       { year: 2015, text: 'Keepers of the Land Research Fund launched' },

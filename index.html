@@ -51,14 +51,12 @@
           <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list">Menu</button>
           <ul id="nav-list">
             <li><a href="#mission">Mission and Vision</a></li>
+            <li><a href="#story">Our Story</a></li>
             <li><a href="#work">ESDU at Work</a></li>
+            <li><a href="#goals">Strategic Goals</a></li>
             <li><a href="#keepers">Keepers of the Land</a></li>
-            <li><a href="#timeline">Timeline</a></li>
-            <li><a href="#video">Video</a></li>
             <li><a href="#impact">Impact</a></li>
-            <li><a href="#goals">Goals</a></li>
             <li><a href="#partners">Partners and Donors</a></li>
-            <!-- <li><a href="#strategy">Strategy</a></li> -->
             <li><a href="#resources">Resources</a></li>
           </ul>
         </nav>
@@ -105,7 +103,7 @@
               bridging academia and the field.
             </p>
             <div class="hero-ctas">
-              <a href="#timeline" class="btn primary">See the Journey</a>
+              <a href="#story" class="btn primary">See the Journey</a>
               <a href="#impact" class="btn ghost">Explore Impact</a>
               
             </div>
@@ -162,6 +160,64 @@
             <button class="slider-prev" aria-label="Previous">‹</button>
             <div class="slider-dots" aria-hidden="true"></div>
             <button class="slider-next" aria-label="Next">›</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- OUR STORY (Timeline + Video merged) -->
+      <section id="story" class="section story timeline bg-rose" aria-label="Our Story">
+        <div class="container">
+          <header class="section-head">
+            <h2>Our Story</h2>
+            <p>Experience ESDU's journey through 25 years of impact, innovation, and community transformation.</p>
+          </header>
+          
+          <!-- Timeline Component - Exact same structure as original -->
+          <div class="timeline-wrapper">
+            <div class="timeline-track" data-timeline>
+              <div class="rail" aria-hidden="true"></div>
+              <div class="progress" aria-hidden="true"></div>
+              <!-- JS populates years & milestones -->
+            </div>
+            <div class="timeline-controls" aria-label="Timeline navigation">
+              <button class="timeline-prev" aria-label="Previous milestone">‹</button>
+              <button class="timeline-next" aria-label="Next milestone">›</button>
+            </div>
+          </div>
+          
+          <!-- Video Component -->
+          <div class="video-container" style="margin-top: 3rem;">
+            <div class="video-wrapper">
+              <!-- Video Poster Thumbnail - Shows when video is not loaded or before play -->
+              <div class="video-poster">
+                <img src="./assets/images/video-poster.jpg" alt="ESDU 25th Anniversary Video Preview" class="video-thumbnail" />
+                <div class="video-play-overlay" aria-hidden="true">
+                  <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+              <!-- 
+                Google Drive Video Embed Instructions:
+                1. Upload your video to Google Drive
+                2. Right-click the video file → "Get link" → Set sharing to "Anyone with the link"
+                3. Copy the file ID from the shareable link (the long string between /d/ and /view)
+                4. Replace YOUR_FILE_ID below with your actual file ID
+                
+                Example: If your link is: https://drive.google.com/file/d/1ABC123xyz456/view
+                Use file ID: 1ABC123xyz456
+                Final embed URL: https://drive.google.com/file/d/1ABC123xyz456/preview
+              -->
+              <iframe 
+                class="esdu-video esdu-video-iframe"
+                src="https://drive.google.com/file/d/YOUR_FILE_ID/preview"
+                allow="autoplay; fullscreen; encrypted-media"
+                allowfullscreen
+                frameborder="0"
+                aria-label="ESDU 25th Anniversary Video"
+                title="ESDU 25th Anniversary Video">
+              </iframe>
+            </div>
           </div>
         </div>
       </section>
@@ -225,6 +281,53 @@
               <div class="carousel-dots" aria-hidden="true"></div>
               <button class="carousel-next" aria-label="Next slide">›</button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STRATEGIC GOALS -->
+      <section id="goals" class="section goals bg-amber" aria-label="Strategic Goals 2025-2030">
+        <div class="container">
+          <header class="section-head">
+            <h2>Strategic Goals 2025–2030</h2>
+            <p>Five interconnected pillars guiding ESDU's next chapter.</p>
+          </header>
+          <div class="goals-grid">
+            <article class="goal-card">
+              <div class="goal-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h3>Innovative ESDU</h3>
+              <p>Advancing circular economy, AI, sustainable design, food systems, and heritage through cutting-edge research and innovation.</p>
+            </article>
+            <article class="goal-card">
+              <div class="goal-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h3>Bright ESDU</h3>
+              <p>Driving education for sustainable food systems through online platforms, school programs, and Continuing Education Center (CEC) courses, expanding scholarships and regional student outreach.</p>
+            </article>
+            <article class="goal-card">
+              <div class="goal-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h3>Engaged ESDU</h3>
+              <p>Fostering community action, strategic partnerships, and network-based approaches for transformative change.</p>
+            </article>
+            <article class="goal-card">
+              <div class="goal-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h3>Smart ESDU</h3>
+              <p>Empowering AI and digital literacy, innovation, and global collaboration for a smarter sustainable future.</p>
+            </article>
+            <article class="goal-card">
+              <div class="goal-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h3>Sustainable ESDU</h3>
+              <p>Ensuring institutional resilience through team growth, creative fundraising, and strong partnerships.</p>
+            </article>
           </div>
         </div>
       </section>
@@ -302,69 +405,6 @@
         </div>
       </section>
       -->
-      <!-- TIMELINE -->
-      <section id="timeline" class="section timeline bg-rose" aria-label="25-Year Timeline">
-        <div class="container">
-          <header class="section-head">
-            <h2>Timeline</h2>
-            <p>25 years of innovation, impact, and transformation from grassroots research to regional leadership.</p>
-          </header>
-          <div class="timeline-wrapper">
-            <div class="timeline-track" data-timeline>
-              <div class="rail" aria-hidden="true"></div>
-              <div class="progress" aria-hidden="true"></div>
-              <!-- JS populates years & milestones -->
-            </div>
-            <div class="timeline-controls" aria-label="Timeline navigation">
-              <button class="timeline-prev" aria-label="Previous milestone">‹</button>
-              <button class="timeline-next" aria-label="Next milestone">›</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIDEO SECTION -->
-      <section id="video" class="section video bg-amber" aria-label="ESDU Video">
-        <div class="container">
-          <header class="section-head">
-            <h2>Our Story</h2>
-            <p>Experience ESDU's journey through 25 years of impact, innovation, and community transformation.</p>
-          </header>
-          <div class="video-container">
-            <div class="video-wrapper">
-              <!-- Video Poster Thumbnail - Shows when video is not loaded or before play -->
-              <div class="video-poster">
-                <img src="./assets/images/video-poster.jpg" alt="ESDU 25th Anniversary Video Preview" class="video-thumbnail" />
-                <div class="video-play-overlay" aria-hidden="true">
-                  <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-              </div>
-              <!-- 
-                Google Drive Video Embed Instructions:
-                1. Upload your video to Google Drive
-                2. Right-click the video file → "Get link" → Set sharing to "Anyone with the link"
-                3. Copy the file ID from the shareable link (the long string between /d/ and /view)
-                4. Replace YOUR_FILE_ID below with your actual file ID
-                
-                Example: If your link is: https://drive.google.com/file/d/1ABC123xyz456/view
-                Use file ID: 1ABC123xyz456
-                Final embed URL: https://drive.google.com/file/d/1ABC123xyz456/preview
-              -->
-              <iframe 
-                class="esdu-video esdu-video-iframe"
-                src="https://drive.google.com/file/d/YOUR_FILE_ID/preview"
-                allow="autoplay; fullscreen; encrypted-media"
-                allowfullscreen
-                frameborder="0"
-                aria-label="ESDU 25th Anniversary Video"
-                title="ESDU 25th Anniversary Video">
-              </iframe>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <!-- IMPACT & OUTREACH -->
       <section id="impact" class="section impact bg-rose" aria-label="Impact in Numbers and Outreach">
@@ -436,59 +476,10 @@
                 </div>
               </div>
             </div>
-            <p style="margin-bottom: 1rem; color: var(--muted); font-size: 0.95rem;">
-              <strong>Initiatives:</strong> Urban Agriculture, KariaNet, EvalMENA, From Seed to Table
-            </p>
+            
             <div class="map-stage">
               <div id="esdu-map-container"></div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STRATEGIC GOALS -->
-      <section id="goals" class="section goals bg-amber" aria-label="Strategic Goals 2025-2030">
-        <div class="container">
-          <header class="section-head">
-            <h2>Strategic Goals 2025–2030</h2>
-            <p>Five interconnected pillars guiding ESDU's next chapter.</p>
-          </header>
-          <div class="goals-grid">
-            <article class="goal-card">
-              <div class="goal-image">
-                <div class="image-placeholder"></div>
-              </div>
-              <h3>Innovative ESDU</h3>
-              <p>Advancing circular economy, AI, sustainable design, food systems, and heritage through cutting-edge research and innovation.</p>
-            </article>
-            <article class="goal-card">
-              <div class="goal-image">
-                <div class="image-placeholder"></div>
-              </div>
-              <h3>Bright ESDU</h3>
-              <p>Driving education for sustainable food systems through online platforms, school programs, and Continuing Education Center (CEC) courses, expanding scholarships and regional student outreach.</p>
-            </article>
-            <article class="goal-card">
-              <div class="goal-image">
-                <div class="image-placeholder"></div>
-              </div>
-              <h3>Engaged ESDU</h3>
-              <p>Fostering community action, strategic partnerships, and network-based approaches for transformative change.</p>
-            </article>
-            <article class="goal-card">
-              <div class="goal-image">
-                <div class="image-placeholder"></div>
-              </div>
-              <h3>Smart ESDU</h3>
-              <p>Empowering AI and digital literacy, innovation, and global collaboration for a smarter sustainable future.</p>
-            </article>
-            <article class="goal-card">
-              <div class="goal-image">
-                <div class="image-placeholder"></div>
-              </div>
-              <h3>Sustainable ESDU</h3>
-              <p>Ensuring institutional resilience through team growth, creative fundraising, and strong partnerships.</p>
-            </article>
           </div>
         </div>
       </section>
@@ -725,13 +716,12 @@
         </div>
           <ul class="footer-links">
           <li><a href="#mission">Mission and Vision</a></li>
+          <li><a href="#story">Our Story</a></li>
           <li><a href="#work">ESDU at Work</a></li>
-          <li><a href="#timeline">Timeline</a></li>
-          <li><a href="#video">Video</a></li>
+          <li><a href="#goals">Strategic Goals</a></li>
+          <li><a href="#keepers">Keepers of the Land</a></li>
           <li><a href="#impact">Impact</a></li>
-          <li><a href="#goals">Goals</a></li>
-          <li><a href="#partners">Ecosystem</a></li>
-          <li><a href="#strategy">Strategy</a></li>
+          <li><a href="#partners">Partners and Donors</a></li>
           <li><a href="#resources">Resources</a></li>
         </ul>
         <p class="copyright">© <span id="year"></span> ESDU. All rights reserved.</p>
