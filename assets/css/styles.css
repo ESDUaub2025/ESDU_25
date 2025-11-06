@@ -116,7 +116,7 @@ a:hover { text-decoration: underline; }
 }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: .6rem 0; }
 .brand { display: inline-flex; align-items: baseline; gap: .4rem; font-weight: 700; color: var(--ink); }
-.brand-mark { display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; background: var(--brand); color: #fff; border-radius: 8px; font-size: .85rem; animation: pulseSlow 4s ease-in-out infinite; }
+.brand-mark { display: inline-block; width: 1.8rem; height: 1.8rem; object-fit: contain; border-radius: 8px; animation: pulseSlow 4s ease-in-out infinite; }
 .brand-text { 
   position: relative; 
   letter-spacing: .3px;
