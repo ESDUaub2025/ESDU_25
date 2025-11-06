@@ -689,7 +689,7 @@ ready(() => {
     };
 
     // Render outreach map with connections
-    function renderOutreachMap(map, data) {
+    function renderOutreachMap(map, data, expectedView) {
       // Clear existing markers
       map.eachLayer(layer => {
         if (layer instanceof L.Marker || layer instanceof L.Polyline) {
@@ -804,7 +804,14 @@ ready(() => {
       markersAndConnections.forEach((item, index) => {
         const delay = index * delayPerMarker;
         
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+          // CRITICAL FIX: Check if view has changed before adding layers
+          // This prevents lines from previous view from appearing
+          if (expectedView && currentView !== expectedView) {
+            // View has changed, don't add these layers
+            return;
+          }
+          
           // Add marker to map - Leaflet will position it correctly NOW
           item.marker.addTo(map);
           
@@ -833,6 +840,9 @@ ready(() => {
             connectionElement.style.animationDelay = `${waveDelay}s`;
           }
         }, delay);
+        
+        // Track this timeout so it can be cancelled if view changes
+        pendingTimeouts.push(timeoutId);
       });
     }
 
@@ -882,9 +892,29 @@ ready(() => {
 
     // Tab switching for local/regional/global views
     let currentView = 'local';
+    // Track pending timeouts to cancel them when switching views
+    let pendingTimeouts = [];
+    let renderTimeoutId = null;
     
     function switchView(view) {
       currentView = view;
+      
+      // CRITICAL FIX: Cancel all pending timeouts from previous view
+      // This prevents lines from previous view from appearing in new view
+      pendingTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+      pendingTimeouts = [];
+      if (renderTimeoutId) {
+        clearTimeout(renderTimeoutId);
+        renderTimeoutId = null;
+      }
+      
+      // CRITICAL FIX: Immediately clear all markers and polylines before switching
+      // This ensures no leftover lines from previous view
+      map.eachLayer(layer => {
+        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+          map.removeLayer(layer);
+        }
+      });
       
       // Filter nodes based on view - ensure local only shows Lebanon points
       let filteredNodes = [];
@@ -966,9 +996,10 @@ ready(() => {
         }
         
         // Wait for map to update, then render markers
-        setTimeout(() => {
+        renderTimeoutId = setTimeout(() => {
           map.invalidateSize();
-          renderOutreachMap(map, filteredData);
+          renderOutreachMap(map, filteredData, view);
+          renderTimeoutId = null;
         }, 10);
       };
       
