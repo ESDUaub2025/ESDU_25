@@ -1101,7 +1101,7 @@ ready(() => {
     // CONFIGURATION: Add any image filename with "hero" in the name to this array
     // The carousel will automatically include all images listed here
     // Example: ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG', 'hero-4.png']
-    const heroImageNames = ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG'];
+    const heroImageNames = ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG','hero-4.jpg'];
     
     // Check if there are existing images in HTML (for fallback/SEO)
     const existingImages = heroCarousel.querySelectorAll('.hero-image');
