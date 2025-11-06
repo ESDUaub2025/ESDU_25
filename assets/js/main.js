@@ -1095,17 +1095,76 @@ ready(() => {
   // Note: Google Drive iframe handles fullscreen internally, no additional JS needed
   // The iframe's allowfullscreen attribute enables native fullscreen support
 
-  // Hero Image Carousel with rotating effects
-  const heroImages = document.querySelectorAll('.hero-image');
-  if (heroImages.length > 0) {
+  // Hero Image Carousel with dynamic image loading and enhanced animations
+  const heroCarousel = document.querySelector('.hero-image-carousel');
+  if (heroCarousel) {
+    // CONFIGURATION: Add any image filename with "hero" in the name to this array
+    // The carousel will automatically include all images listed here
+    // Example: ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG', 'hero-4.png']
+    const heroImageNames = ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG'];
+    
+    // Check if there are existing images in HTML (for fallback/SEO)
+    const existingImages = heroCarousel.querySelectorAll('.hero-image');
+    let heroImages = [];
+    
+    if (existingImages.length > 0) {
+      // Use existing images from HTML
+      heroImages = Array.from(existingImages);
+      // Ensure first image is active
+      heroImages.forEach((img, index) => {
+        if (index === 0) {
+          img.classList.add('active');
+        } else {
+          img.classList.remove('active');
+        }
+      });
+    } else {
+      // Create image elements dynamically from the configuration array
+      heroCarousel.innerHTML = '';
+      heroImageNames.forEach((imgName, index) => {
+        const img = document.createElement('img');
+        img.src = `./assets/images/${imgName}`;
+        img.alt = `ESDU Hero Image ${index + 1}`;
+        img.className = 'hero-image';
+        if (index === 0) {
+          img.classList.add('active');
+        }
+        heroCarousel.appendChild(img);
+        heroImages.push(img);
+      });
+    }
+    
+    // Enhanced animation effects with more variety
+    const effects = [
+      'fade',           // Classic fade
+      'fade-blur',      // Fade with blur
+      'zoom-in',        // Zoom in from center
+      'zoom-out',       // Zoom out from large
+      'slide-left',     // Slide from left
+      'slide-right',    // Slide from right
+      'slide-up',       // Slide from bottom
+      'slide-down',     // Slide from top
+      'rotate-in',      // Rotate while fading in
+      'flip-horizontal', // Flip horizontally
+      'flip-vertical',  // Flip vertically
+      'scale-bounce',   // Scale with bounce effect
+      'wipe-left',      // Wipe from left
+      'wipe-right',     // Wipe from right
+      'cross-zoom',     // Cross zoom (old zooms out, new zooms in)
+      'blur-focus'      // Blur to focus
+    ];
+    
     let currentIndex = 0;
-    const effects = ['fade', 'blur', 'zoom', 'slide'];
+    let isTransitioning = false;
     
     function getRandomEffect() {
       return effects[Math.floor(Math.random() * effects.length)];
     }
     
     function rotateHeroImages() {
+      if (isTransitioning || heroImages.length <= 1) return;
+      
+      isTransitioning = true;
       const previousIndex = currentIndex;
       currentIndex = (currentIndex + 1) % heroImages.length;
       const effect = getRandomEffect();
@@ -1113,58 +1172,262 @@ ready(() => {
       const prevImg = heroImages[previousIndex];
       const nextImg = heroImages[currentIndex];
       
-      // Remove all effect classes
+      // Remove all effect classes from all images
       heroImages.forEach(img => {
-        img.classList.remove('active', 'fade-out', 'fade-in', 'zoom-in', 'zoom-out', 'slide-left', 'slide-right');
+        img.classList.remove(
+          'active', 'fade-out', 'fade-in', 'fade-blur-in', 'fade-blur-out',
+          'zoom-in', 'zoom-out', 'zoom-in-effect', 'zoom-out-effect',
+          'slide-left', 'slide-right', 'slide-up', 'slide-down',
+          'slide-left-in', 'slide-right-in', 'slide-up-in', 'slide-down-in',
+          'rotate-in', 'flip-horizontal', 'flip-vertical',
+          'scale-bounce', 'wipe-left', 'wipe-right',
+          'cross-zoom-out', 'cross-zoom-in', 'blur-focus-in'
+        );
+        img.style.transform = '';
+        img.style.filter = '';
+        img.style.opacity = '';
       });
       
-      // Apply fade-out to previous image with smooth transition
-      if (prevImg) {
-        prevImg.classList.add('fade-out');
-        setTimeout(() => {
-          prevImg.classList.remove('fade-out', 'active');
-        }, 1500);
+      // Handle different animation effects
+      switch(effect) {
+        case 'fade':
+          prevImg.classList.add('fade-out');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            nextImg.classList.add('active', 'fade-in');
+            setTimeout(() => {
+              nextImg.classList.remove('fade-in');
+              isTransitioning = false;
+            }, 1500);
+          }, 800);
+          break;
+          
+        case 'fade-blur':
+          prevImg.classList.add('fade-blur-out');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-blur-out', 'active');
+            nextImg.classList.add('active', 'fade-blur-in');
+            setTimeout(() => {
+              nextImg.classList.remove('fade-blur-in');
+              isTransitioning = false;
+            }, 1500);
+          }, 800);
+          break;
+          
+        case 'zoom-in':
+          prevImg.classList.add('fade-out');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            nextImg.classList.add('active', 'zoom-in-effect');
+            setTimeout(() => {
+              nextImg.classList.remove('zoom-in-effect');
+              isTransitioning = false;
+            }, 1500);
+          }, 300);
+          break;
+          
+        case 'zoom-out':
+          prevImg.classList.add('zoom-out-effect');
+          setTimeout(() => {
+            prevImg.classList.remove('zoom-out-effect', 'active');
+            nextImg.classList.add('active', 'fade-in');
+            setTimeout(() => {
+              nextImg.classList.remove('fade-in');
+              isTransitioning = false;
+            }, 1500);
+          }, 300);
+          break;
+          
+        case 'slide-left':
+          prevImg.classList.add('slide-left');
+          nextImg.classList.add('active', 'slide-right-in');
+          setTimeout(() => {
+            prevImg.classList.remove('slide-left', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('slide-right-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'slide-right':
+          prevImg.classList.add('slide-right');
+          nextImg.classList.add('active', 'slide-left-in');
+          setTimeout(() => {
+            prevImg.classList.remove('slide-right', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('slide-left-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'slide-up':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'slide-up-in');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('slide-up-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'slide-down':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'slide-down-in');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('slide-down-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'rotate-in':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'rotate-in');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('rotate-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'flip-horizontal':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'flip-horizontal');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('flip-horizontal');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'flip-vertical':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'flip-vertical');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('flip-vertical');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'scale-bounce':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'scale-bounce');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('scale-bounce');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'wipe-left':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'wipe-left');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('wipe-left');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'wipe-right':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'wipe-right');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('wipe-right');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'cross-zoom':
+          prevImg.classList.add('cross-zoom-out');
+          nextImg.classList.add('active', 'cross-zoom-in');
+          setTimeout(() => {
+            prevImg.classList.remove('cross-zoom-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('cross-zoom-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1200);
+          break;
+          
+        case 'blur-focus':
+          prevImg.classList.add('fade-out');
+          nextImg.classList.add('active', 'blur-focus-in');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            setTimeout(() => {
+              nextImg.classList.remove('blur-focus-in');
+              isTransitioning = false;
+            }, 100);
+          }, 1500);
+          break;
+          
+        default:
+          // Fallback to fade
+          prevImg.classList.add('fade-out');
+          setTimeout(() => {
+            prevImg.classList.remove('fade-out', 'active');
+            nextImg.classList.add('active', 'fade-in');
+            setTimeout(() => {
+              nextImg.classList.remove('fade-in');
+              isTransitioning = false;
+            }, 1500);
+          }, 800);
       }
-      
-      // Apply effect and show next image with slight delay for smooth crossfade
-      setTimeout(() => {
-        nextImg.classList.add('active');
-        
-        switch(effect) {
-          case 'fade':
-            nextImg.classList.add('fade-in');
-            setTimeout(() => nextImg.classList.remove('fade-in'), 2000);
-            break;
-          case 'blur':
-            nextImg.style.filter = 'blur(0px)';
-            nextImg.style.opacity = '1';
-            break;
-          case 'zoom':
-            nextImg.classList.add('zoom-in');
-            setTimeout(() => {
-              nextImg.classList.remove('zoom-in');
-              nextImg.classList.add('zoom-out');
-              setTimeout(() => nextImg.classList.remove('zoom-out'), 1500);
-            }, 1500);
-            break;
-          case 'slide':
-            const direction = Math.random() > 0.5 ? 'slide-left' : 'slide-right';
-            nextImg.classList.add(direction);
-            setTimeout(() => {
-              nextImg.classList.remove(direction);
-              nextImg.style.transform = 'translate(-50%, -50%)';
-            }, 1500);
-            break;
-        }
-      }, 200);
     }
     
-    // Initialize first image
-    if (heroImages[0]) {
-      heroImages[0].classList.add('active');
+    // Wait for images to load before starting carousel
+    let imagesLoaded = 0;
+    const totalExpected = heroImages.length; // Use actual heroImages array length
+    let carouselStarted = false;
+    
+    function startCarouselIfReady() {
+      if (!carouselStarted && imagesLoaded >= totalExpected && heroImages.length > 1) {
+        carouselStarted = true;
+        setInterval(rotateHeroImages, 5000);
+      }
     }
     
-    // Rotate images every 5 seconds
-    setInterval(rotateHeroImages, 5000);
+    heroImages.forEach(img => {
+      if (img.complete) {
+        imagesLoaded++;
+        startCarouselIfReady();
+      } else {
+        img.addEventListener('load', () => {
+          imagesLoaded++;
+          startCarouselIfReady();
+        });
+        img.addEventListener('error', () => {
+          imagesLoaded++;
+          // Remove broken image from array
+          const index = heroImages.indexOf(img);
+          if (index > -1) {
+            heroImages.splice(index, 1);
+            img.remove();
+          }
+          startCarouselIfReady();
+        });
+      }
+    });
   }
 });
