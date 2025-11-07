@@ -608,7 +608,9 @@ ready(() => {
   const cIo = new IntersectionObserver((entries, obs) => {
     entries.forEach(({ isIntersecting, target }) => {
       if (!isIntersecting) return;
-      const end = parseInt(target.getAttribute('data-count') || '0', 10);
+      const rawCount = target.getAttribute('data-count') || '0';
+      const sanitized = String(rawCount).replace(/[^0-9.-]/g, '');
+      const end = parseInt(sanitized || '0', 10);
       animateCount(target, end, 1200);
       obs.unobserve(target);
     });
@@ -1117,6 +1119,11 @@ ready(() => {
         } else {
           img.classList.remove('active');
         }
+        // Force eager loading so carousel can start promptly
+        if (img.loading === 'lazy') {
+          img.loading = 'eager';
+          img.removeAttribute('loading');
+        }
       });
     } else {
       // Create image elements dynamically from the configuration array
@@ -1126,6 +1133,7 @@ ready(() => {
         img.src = `./assets/images/${imgName}`;
         img.alt = `ESDU Hero Image ${index + 1}`;
         img.className = 'hero-image';
+        img.loading = 'eager';
         if (index === 0) {
           img.classList.add('active');
         }
@@ -1398,11 +1406,11 @@ ready(() => {
     
     // Wait for images to load before starting carousel
     let imagesLoaded = 0;
-    const totalExpected = heroImages.length; // Use actual heroImages array length
+    const minImagesToStart = Math.min(heroImages.length, 2);
     let carouselStarted = false;
     
-    function startCarouselIfReady() {
-      if (!carouselStarted && imagesLoaded >= totalExpected && heroImages.length > 1) {
+    function startCarouselIfReady(force = false) {
+      if (!carouselStarted && heroImages.length > 1 && (force || imagesLoaded >= minImagesToStart)) {
         carouselStarted = true;
         setInterval(rotateHeroImages, 5000);
       }
@@ -1429,5 +1437,8 @@ ready(() => {
         });
       }
     });
+
+    // Fallback: start carousel after a short delay even if not all lazy images reported loaded
+    setTimeout(() => startCarouselIfReady(true), 3500);
   }
 });

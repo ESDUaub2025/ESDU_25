@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4XE0FR7ZBY"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-4XE0FR7ZBY');
-    </script>
+    <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4XE0FR7ZBY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4XE0FR7ZBY');
+  </script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -16,6 +18,7 @@
     <link rel="canonical" href="https://example.org/esdu" />
     <meta name="robots" content="index, follow" />
 
+    <!-- Open Graph / Twitter -->
     <meta property="og:title" content="ESDU: Exploring Solutions, Defying Uncertainties – 25 Years of Sustainable Community Development" />
     <meta property="og:description" content="Community-led rural development, food systems, and sustainable livelihoods." />
     <meta property="og:type" content="website" />
@@ -23,13 +26,18 @@
     <meta property="og:image" content="https://example.org/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-
+    <!-- Proxima Nova - If you have Adobe Fonts account, replace the URL below with your Typekit kit URL -->
+    <!-- <link rel="stylesheet" href="https://use.typekit.net/YOUR-KIT-ID.css" /> -->
+    <!-- Using Montserrat as a similar free alternative to Proxima Nova -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet" type="text/css" />
 
+    <!-- Leaflet CSS for map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
 
+    <!-- Preload critical images for faster loading -->
     <link rel="preload" as="image" href="./assets/images/hero-0.jpg" fetchpriority="high" />
     <link rel="preload" as="image" href="./assets/images/ESDU 25th Anniversary _ Logo _ Final-05.png" />
     <link rel="preload" as="image" href="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" />
@@ -70,7 +78,7 @@
     </header>
 
     <main id="main">
-
+      <!-- HERO -->
       <section id="home" class="section hero" aria-label="ESDU Hero">
         <div class="container">
           <div class="hero-logo-center">
@@ -111,7 +119,7 @@
             <div class="hero-ctas">
               <a href="#story" class="btn primary">See the Journey</a>
               <a href="#impact" class="btn ghost">Explore Impact</a>
-
+              
             </div>
           </div>
           <div class="hero-visual" aria-hidden="true">
@@ -126,6 +134,7 @@
         </div>
       </section>
 
+      <!-- MISSION / VISION / VALUES -->
       <section id="mission" class="section mvv bg-rose" aria-label="Mission, Vision, Core Values">
         <div class="container">
           <header class="section-head">
@@ -171,28 +180,65 @@
         </div>
       </section>
 
+      <!-- OUR STORY (Timeline + Video merged) -->
       <section id="story" class="section story timeline bg-rose" aria-label="Our Story">
         <div class="container">
           <header class="section-head">
             <h2>Our Story</h2>
             <p>Experience ESDU's journey through 25 years of impact, innovation, and community transformation.</p>
           </header>
-
+          
+          <!-- Timeline Component - Exact same structure as original -->
           <div class="timeline-wrapper">
             <div class="timeline-track" data-timeline>
               <div class="rail" aria-hidden="true"></div>
               <div class="progress" aria-hidden="true"></div>
-
+              <!-- JS populates years & milestones -->
             </div>
             <div class="timeline-controls" aria-label="Timeline navigation">
               <button class="timeline-prev" aria-label="Previous milestone">‹</button>
               <button class="timeline-next" aria-label="Next milestone">›</button>
             </div>
           </div>
-
+          
+          <!-- Video Component -->
+          <!-- <div class="video-container" style="margin-top: 3rem;"> -->
+          <!--   <div class="video-wrapper"> -->
+          <!--     Video Poster Thumbnail - Shows when video is not loaded or before play -->
+          <!--     <div class="video-poster"> -->
+          <!--       <img src="./assets/images/video-poster.jpg" alt="ESDU 25th Anniversary Video Preview" class="video-thumbnail" loading="lazy" /> -->
+          <!--       <div class="video-play-overlay" aria-hidden="true"> -->
+          <!--         <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"> -->
+          <!--           <path d="M8 5v14l11-7z"/> -->
+          <!--         </svg> -->
+          <!--       </div> -->
+          <!--     </div> -->
+          <!--     -->
+          <!--       Google Drive Video Embed Instructions: -->
+          <!--       1. Upload your video to Google Drive -->
+          <!--       2. Right-click the video file → "Get link" → Set sharing to "Anyone with the link" -->
+          <!--       3. Copy the file ID from the shareable link (the long string between /d/ and /view) -->
+          <!--       4. Replace YOUR_FILE_ID below with your actual file ID -->
+          <!--        -->
+          <!--       Example: If your link is: https://drive.google.com/file/d/1ABC123xyz456/view -->
+          <!--       Use file ID: 1ABC123xyz456 -->
+          <!--       Final embed URL: https://drive.google.com/file/d/1ABC123xyz456/preview -->
+          <!--     -->
+          <!--     <iframe  -->
+          <!--       class="esdu-video esdu-video-iframe" -->
+          <!--       src="https://drive.google.com/file/d/YOUR_FILE_ID/preview" -->
+          <!--       allow="autoplay; fullscreen; encrypted-media" -->
+          <!--       allowfullscreen -->
+          <!--       frameborder="0" -->
+          <!--       aria-label="ESDU 25th Anniversary Video" -->
+          <!--       title="ESDU 25th Anniversary Video"> -->
+          <!--     </iframe> -->
+          <!--   </div> -->
+          <!-- </div> -->
         </div>
       </section>
 
+      <!-- ESDU AT WORK: 6 SLIDES CAROUSEL -->
       <section id="work" class="section work bg-amber" aria-label="ESDU at Work carousel">
         <div class="container">
           <header class="section-head">
@@ -204,7 +250,7 @@
               <div class="carousel-track">
               <article class="slide">
                 <div class="slide-image">
-
+                  <!-- TODO: Replace with actual Bridging Research and Practice image -->
                   <img src="./assets/images/hero-1.jpg" alt="Bridging Research and Practice" loading="lazy" />
                 </div>
                 <h3>Bridging Research and Practice</h3>
@@ -256,6 +302,7 @@
         </div>
       </section>
 
+      <!-- STRATEGIC GOALS -->
       <section id="goals" class="section goals bg-amber" aria-label="Strategic Goals 2025-2030">
         <div class="container">
           <header class="section-head">
@@ -265,7 +312,7 @@
           <div class="goals-grid">
             <article class="goal-card">
               <div class="goal-image">
-
+                <!-- TODO: Replace with actual Innovative ESDU image -->
                 <img src="./assets/images/hero-2.jpg" alt="Innovative ESDU" loading="lazy" />
               </div>
               <h3>Innovative ESDU</h3>
@@ -273,7 +320,7 @@
             </article>
             <article class="goal-card">
               <div class="goal-image">
-
+                <!-- TODO: Replace with actual Bright ESDU image -->
                 <img src="./assets/images/Work education and training.jpg" alt="Bright ESDU" loading="lazy" />
               </div>
               <h3>Bright ESDU</h3>
@@ -281,7 +328,7 @@
             </article>
             <article class="goal-card">
               <div class="goal-image">
-
+                <!-- TODO: Replace with actual Engaged ESDU image -->
                 <img src="./assets/images/work partnerships.jpg" alt="Engaged ESDU" loading="lazy" />
               </div>
               <h3>Engaged ESDU</h3>
@@ -289,7 +336,7 @@
             </article>
             <article class="goal-card">
               <div class="goal-image">
-
+                <!-- TODO: Replace with actual Smart ESDU image -->
                 <img src="./assets/images/hero-3.JPG" alt="Smart ESDU" loading="lazy" />
               </div>
               <h3>Smart ESDU</h3>
@@ -297,7 +344,7 @@
             </article>
             <article class="goal-card">
               <div class="goal-image">
-
+                <!-- TODO: Replace with actual Sustainable ESDU image -->
                 <img src="./assets/images/showcasing solutions.jpg" alt="Sustainable ESDU" loading="lazy" />
               </div>
               <h3>Sustainable ESDU</h3>
@@ -307,11 +354,12 @@
         </div>
       </section>
 
+      <!-- KEEPERS OF THE LAND -->
       <section id="keepers" class="section keepers bg-green" aria-label="Keepers of the Land">
         <div class="container grid-keepers">
           <div class="kotl-card">
             <div class="kotl-image">
-
+              <!-- TODO: Replace with actual Keepers of the Land image -->
               <img src="./assets/images/hero-1.jpg" alt="Keepers of the Land" loading="lazy" />
             </div>
             <h2>Keepers of the Land</h2>
@@ -337,7 +385,51 @@
             </ul>
           </aside>
         </div>
+        <!--
+        <div class="container" style="margin-top: 2rem;">
+          <h3 style="text-align: center; margin-bottom: 1.5rem;">Cross-Cutting Initiatives</h3>
+          <div class="initiatives-grid">
+            <div class="initiative-item">
+              <div class="initiative-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h4>DAWWERA</h4>
+              <p>Water-energy-waste nexus sustainability network integrating circular economy principles for rural empowerment.</p>
+            </div>
+            <div class="initiative-item">
+              <div class="initiative-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h4>ARDI ARDAK</h4>
+              <p>Community-supported national food security initiative connecting producers and consumers through solidarity networks.</p>
+            </div>
+            <div class="initiative-item">
+              <div class="initiative-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h4>ITHMAR</h4>
+              <p>Heritage preservation initiative reviving traditional local food systems for cultural continuity and food sovereignty.</p>
+            </div>
+            <div class="initiative-item">
+              <div class="initiative-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h4>AI Impact</h4>
+              <p>Digital transformation hub integrating artificial intelligence for agricultural innovation and climate resilience.</p>
+            </div>
+            <div class="initiative-item">
+              <div class="initiative-image">
+                <div class="image-placeholder"></div>
+              </div>
+              <h4>Urban Oasis</h4>
+              <p>Engagement center and digital technology showcase for transformative community change and innovation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      -->
 
+      <!-- IMPACT & OUTREACH -->
       <section id="impact" class="section impact bg-rose" aria-label="Impact in Numbers and Outreach">
         <div class="container">
           <header class="section-head">
@@ -347,20 +439,24 @@
 
           <div class="kpi-grid" role="list">
             <div class="kpi" role="listitem">
-              <div class="kpi-value" data-count="15">0</div>
+              <div class="kpi-value" data-count="11">0</div>
               <div class="kpi-label">Million USD Amount of Funding</div>
             </div>
             <div class="kpi" role="listitem">
-              <div class="kpi-value" data-count="70">0</div>
+              <div class="kpi-value" data-count="62">0</div>
               <div class="kpi-label">Number of Grants</div>
             </div>
             <div class="kpi" role="listitem">
-              <div class="kpi-value" data-count="100,000">0</div>
+              <div class="kpi-value" data-count="25000">0</div>
               <div class="kpi-label">Livelihoods Strengthened (beneficiaries)</div>
             </div>
             <div class="kpi" role="listitem">
-              <div class="kpi-value" data-count="12,000">0</div>
+              <div class="kpi-value" data-count="12000">0</div>
               <div class="kpi-label">Women as Keepers of the Land</div>
+            </div>
+            <div class="kpi" role="listitem">
+              <div class="kpi-value" data-count="5000">0</div>
+              <div class="kpi-label">Developmental Actors Trained</div>
             </div>
             <div class="kpi" role="listitem">
               <div class="kpi-value" data-count="170">0</div>
@@ -371,7 +467,7 @@
               <div class="kpi-label">Education & Research Integration (students & researchers)</div>
             </div>
             <div class="kpi" role="listitem">
-              <div class="kpi-value" data-count="20,000">0</div>
+              <div class="kpi-value" data-count="18000">0</div>
               <div class="kpi-label">Capacity Building & Training (trainees)</div>
             </div>
             <div class="kpi" role="listitem">
@@ -403,7 +499,7 @@
                 </div>
               </div>
             </div>
-
+            
             <div class="map-stage">
               <div id="esdu-map-container"></div>
             </div>
@@ -411,13 +507,14 @@
         </div>
       </section>
 
+      <!-- PARTNERS AND DONORS -->
       <section id="partners" class="section partners bg-rose" aria-label="Partners and Donors">
         <div class="container">
           <header class="section-head">
             <h2>Partners and Donors</h2>
             <p>Enduring partnerships across the globe. </p>
           </header>
-
+          
           <div class="donor-grid">
             <div class="donor-card donor-card-idrc" data-reveal>
               <a href="https://www.idrc.ca" target="_blank" rel="noopener">
@@ -498,6 +595,42 @@
         </div>
       </section>
 
+      <!-- STRATEGY -->
+      <!--
+      <section id="strategy" class="section strategy bg-amber" aria-label="ESDU Strategy">
+        <div class="container">
+          <header class="section-head">
+            <h2>Our Strategy</h2>
+            <p>Five interconnected pillars guiding ESDU's next chapter: Innovative, Bright, Engaged, Smart, and Sustainable ESDU.</p>
+          </header>
+          <div class="goals-grid">
+            <article class="goal-card">
+              <h3>Innovative ESDU</h3>
+              <p>Circular economy, AI/digitalization, design for sustainability, food systems transformation, and heritage preservation through cutting-edge research and development projects.</p>
+            </article>
+            <article class="goal-card">
+              <h3>Bright ESDU</h3>
+              <p>Education for sustainable food systems through online platforms, CEC courses, school programs, increased scholarships, and expanded student recruitment across the region.</p>
+            </article>
+            <article class="goal-card">
+              <h3>Engaged ESDU</h3>
+              <p>Community engagement, strategic partnerships, network approaches, and the Urban Oasis as a digital technology showcase for transformative change.</p>
+            </article>
+            <article class="goal-card">
+              <h3>Smart ESDU</h3>
+              <p>AI & digital literacy, collaborative innovation, online presence, digital operations, and regional/international partnerships driving the digital age transition.</p>
+            </article>
+            <article class="goal-card">
+              <h3>Sustainable ESDU</h3>
+              <p>Team retention, economic growth, institutional support, innovative fundraising, diversified income streams, and streamlined collaboration with sister organizations.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+      -->
+
+      <!-- RESOURCES / FILES -->
+  
       <section id="resources" class="section resources bg-green" aria-label="Resources and Files">
         <div class="container">
           <header class="section-head">
@@ -518,10 +651,84 @@
               </a>
             </li>
           </ul>
-
+          
         </div>
       </section>
+      
 
+      <!-- ALL-IN-ONE: OUR ECOSYSTEM -->
+       <!--
+      <section id="ecosystem-summary" class="section ecosystem-summary bg-rose" aria-label="All-in-One: Our Ecosystem">
+        <div class="container">
+          <header class="section-head">
+            <h2>All-in-One: Our Ecosystem</h2>
+            <p>A comprehensive view of ESDU's interconnected network—from founding partners to strategic initiatives, all working together for sustainable community development.</p>
+          </header>
+          
+          <div class="ecosystem-summary-content">
+            <div class="ecosystem-pillars">
+              <h3>Core Pillars</h3>
+              <ul class="pill-list">
+                <li>Keepers of the Land: People at the Center</li>
+                <li>Embedding Research into Development</li>
+                <li>Embedding Relief into Community Systems</li>
+                <li>Technology at the Surface of Our Resilience</li>
+                <li>Education for Sustainable Futures</li>
+              </ul>
+            </div>
+            
+            <div class="ecosystem-initiatives">
+              <h3>Cross-Cutting Initiatives</h3>
+              <div class="initiatives-grid">
+                <div class="initiative-item">
+                  <h4>DAWWERA</h4>
+                  <p>Water-energy-waste nexus sustainability network</p>
+                </div>
+                <div class="initiative-item">
+                  <h4>ARDI ARDAK</h4>
+                  <p>Community-supported national food security</p>
+                </div>
+                <div class="initiative-item">
+                  <h4>ITHMAR</h4>
+                  <p>Heritage preservation and food sovereignty</p>
+                </div>
+                <div class="initiative-item">
+                  <h4>AI Impact</h4>
+                  <p>Digital transformation for agricultural innovation</p>
+                </div>
+                <div class="initiative-item">
+                  <h4>Urban Oasis</h4>
+                  <p>Engagement center and technology showcase</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ecosystem-networks">
+              <h3>Regional Networks</h3>
+              <ul class="pill-list">
+                <li>KariaNet: Knowledge sharing platform</li>
+                <li>EvalMENA: Regional evaluation network</li>
+                <li>Urban Agriculture Initiatives</li>
+                <li>From Seed to Table: Value chain analysis</li>
+                <li>MENA-wide coverage (Gulf & Mediterranean)</li>
+              </ul>
+            </div>
+            
+            <div class="ecosystem-keywords">
+              <h3>Critical Mass & Impact</h3>
+              <ul class="pill-list">
+                <li>25,000+ Livelihoods Strengthened</li>
+                <li>12,000+ Women as Keepers of the Land</li>
+                <li>5,000+ Developmental Actors Trained</li>
+                <li>60+ Strategic Partnerships</li>
+                <li>11M USD in Funding</li>
+                <li>62 Grants Secured</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      -->
     </main>
 
     <footer class="site-footer" role="contentinfo">
@@ -544,6 +751,7 @@
       </div>
     </footer>
 
+    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -560,11 +768,12 @@
     }
     </script>
 
+    <!-- Leaflet JS for map -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
-
+    
+    <!-- ESDU Locations Data -->
     <script src="./assets/data/esdu_locations.js"></script>
-
+    
     <script src="./assets/js/main.js"></script>
   </body>
   </html>
-

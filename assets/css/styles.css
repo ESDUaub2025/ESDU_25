@@ -262,26 +262,34 @@ a:hover { text-decoration: underline; }
   margin-top: 0;
   margin-bottom: clamp(1rem, 2vw, 1.5rem);
 }
-.hero-inner { 
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1.1fr .9fr;
-  grid-template-columns: 1.1fr .9fr;
-  align-items: center;
-  gap: clamp(1.5rem, 4vw, 3rem);
-}
-.hero-brand { margin-bottom: 1.5rem; }
-.hero-esdu {
+.hero-inner {
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin: 0 0 0.5rem 0;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(1.75rem, 5vw, 3.5rem);
+}
+.hero-copy {
+  flex: 1.35 1 480px;
+  min-width: 300px;
+}
+.hero-visual {
+  flex: 1 1 360px;
+  min-width: 280px;
+}
+.hero-brand {
+  margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+}
+.hero-esdu {
+  --esdu-letter-width: clamp(3.1rem, 8vw, 5.4rem);
+  display: grid;
+  row-gap: clamp(0.9rem, 2vw, 1.25rem);
+  margin: 0;
 }
 .esdu-line {
-  display: table;
-  table-layout: fixed;
-  width: 25%;
-  white-space: nowrap;
+  display: grid;
+  grid-template-columns: var(--esdu-letter-width) minmax(0, 1fr);
+  column-gap: clamp(0.35rem, 1vw, 0.75rem);
+  align-items: end;
 }
 .esdu-letter {
   font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -289,20 +297,17 @@ a:hover { text-decoration: underline; }
   color: var(--brand);
   font-size: clamp(3.5rem, 8vw, 6.5rem);
   line-height: 1;
-  display: table-cell;
-  width: clamp(3.5rem, 8vw, 6.5rem);
-  vertical-align: bottom;
-  padding-bottom: 0.2rem;
-  padding-right: -2rem;
+  align-self: end;
+  justify-self: end;
+  padding-bottom: 0.25rem;
 }
 .esdu-text {
-  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  line-height: 1.35;
+  align-self: end;
+  padding-bottom: 0.25rem;
+  min-width: 0;
   white-space: nowrap;
-  line-height: 1;
-  display: table-cell;
-  vertical-align: bottom;
-  padding-bottom: 0.5rem;
-  padding-left: 0;
 }
 
 .esdu-first-word {
@@ -321,20 +326,20 @@ a:hover { text-decoration: underline; }
 .hero-copy h1 { font-size: clamp(2rem, 3.6vw, 3.2rem); }
 .hero-copy p { font-size: clamp(1rem, 1.2vw, 1.2rem); max-width: 56ch; }
 .hero-ctas { display: flex; gap: .75rem; margin-top: 1rem; }
-.hero-visual { 
-  position: relative; 
-  width: 100%; 
+.hero-visual {
+  position: relative;
+  width: 100%;
   border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(132, 1, 50, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  padding: 12px;
+  padding: 0;
   margin: 0;
-  border: 1px solid rgba(132, 1, 50, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* Hero Image Carousel with rotating effects */
@@ -345,12 +350,12 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 0;
   margin: 0;
-  background: #ffffff;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(132, 1, 50, 0.06);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .hero-image {
@@ -358,8 +363,8 @@ a:hover { text-decoration: underline; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: calc(100% - 16px);
-  max-height: calc(100% - 16px);
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -369,11 +374,13 @@ a:hover { text-decoration: underline; }
               filter 1.5s cubic-bezier(0.4, 0, 0.2, 1), 
               transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   filter: blur(0px);
-  background: #ffffff;
-  border-radius: 0.25rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(132, 1, 50, 0.1);
-  padding: 4px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  --hero-edge-softness: 12%;
+  -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) calc(100% - var(--hero-edge-softness)), rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) calc(100% - var(--hero-edge-softness)), rgba(0,0,0,0) 100%);
 }
 
 /* Fallback for missing images - ensure images are visible */
@@ -880,9 +887,16 @@ img.image-error {
   }
 }
 
-@media (max-width: 900px) { 
-  .hero-inner { grid-template-columns: 1fr; } 
-  .hero-visual { order: -1; } 
+@media (max-width: 900px) {
+  .hero-inner { flex-direction: column; }
+  .hero-visual { order: -1; }
+}
+
+@media (max-width: 768px) {
+  .hero-copy { flex: 1 1 100%; }
+  .esdu-line { grid-template-columns: clamp(2.3rem, 15vw, 3.5rem) minmax(0, 1fr); }
+  .esdu-letter { padding-bottom: 0.2rem; }
+  .esdu-text { line-height: 1.3; white-space: normal; }
 }
 
 /* Mission/Vision/Values slider */
