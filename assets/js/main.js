@@ -1,4 +1,4 @@
-// Basic site interactions, sliders, timeline, counters, outreach dots
+﻿// Basic site interactions, sliders, timeline, counters, outreach dots
 
 // Utility: on DOM ready
 function ready(fn) {
@@ -192,7 +192,7 @@ ready(() => {
   const footer = document.querySelector('.site-footer');
   if (footer) footerIo.observe(footer);
 
-  // Mission/Vision/Values – slider controls (mobile)
+  // Mission/Vision/Values â€“ slider controls (mobile)
   const slider = document.querySelector('.mvv .card-slider');
   if (slider) {
     const cards = Array.from(slider.children);
@@ -224,7 +224,7 @@ ready(() => {
     if (dots[0]) dots[0].setAttribute('aria-current', 'true');
   }
 
-  // ESDU at Work – simple carousel with pause-on-interaction
+  // ESDU at Work â€“ simple carousel with pause-on-interaction
   const carousel = document.querySelector('[data-carousel]');
   if (carousel) {
     const track = carousel.querySelector('.carousel-track');
@@ -331,12 +331,12 @@ ready(() => {
     resumeAutoAdvance();
   }
 
-  // Timeline – curated milestones with auto-scroll and pause-on-interaction
+  // Timeline â€“ curated milestones with auto-scroll and pause-on-interaction
   const timeline = document.querySelector('[data-timeline]');
   if (timeline) {
     const milestones = [
       { year: 1996, text: 'IDRC support bails out community-based research: Arsaal project begins' },
-      { year: 2001, text: 'ESDU established as interdisciplinary R&D unit at AUB/FAFS — Arsal case study ($750K)' },
+      { year: 2001, text: 'ESDU established as interdisciplinary R&D unit at AUB/FAFS â€” Arsal case study ($750K)' },
       { year: 2002, text: 'First regional window: UNCCD collaboration begins' },
       { year: 2003, text: 'Healthy Basket launches: organic agriculture and farmer livelihoods' },
       { year: 2005, text: 'IFAD-NEMTA program: Agricultural management training across MENA' },
@@ -351,9 +351,9 @@ ready(() => {
       { year: 2019, text: 'Selected by Food Tank as initiative redefining food & agriculture in Middle East' },
       { year: 2020, text: 'CLIMAT wins Khalifa Date Palm Award; Ardi Ardak featured by FAO' },
       { year: 2021, text: 'Ardi Ardak national food security initiative; Urban Oasis renovation begins' },
-      { year: 2023, text: 'Urban Oasis engagement center launched; wins PRIMA WEFE Nexus Award — First Place' },
+      { year: 2023, text: 'Urban Oasis engagement center launched; wins PRIMA WEFE Nexus Award â€” First Place' },
       { year: 2024, text: 'AFESD Small Green Innovative Project secured; Champion of Plastic Pollution Prevention' },
-      { year: 2025, text: 'Strategy 2025–2030 and Portfolio 2025 published' },
+      { year: 2025, text: 'Strategy 2025â€“2030 and Portfolio 2025 published' },
     ];
     milestones.forEach(m => {
       const year = document.createElement('div');
@@ -741,7 +741,7 @@ ready(() => {
         }
         popupContent += `<h4>${node.title}</h4><p>${node.desc}</p>`;
         if (node.website) {
-          popupContent += `<a href="${node.website}" target="_blank" rel="noopener" class="popup-link">Visit Website →</a>`;
+          popupContent += `<a href="${node.website}" target="_blank" rel="noopener" class="popup-link">Visit Website â†’</a>`;
         }
         popupContent += `</div>`;
         
@@ -871,7 +871,7 @@ ready(() => {
         return true;
       }
       
-      // Also check by coordinates (Mediterranean Europe: 35-55°N, -10-40°E)
+      // Also check by coordinates (Mediterranean Europe: 35-55Â°N, -10-40Â°E)
       const lat = node.lat;
       const lon = node.lon;
       if (lat >= 35 && lat <= 55 && lon >= -10 && lon <= 40) {
@@ -1097,21 +1097,21 @@ ready(() => {
   // Note: Google Drive iframe handles fullscreen internally, no additional JS needed
   // The iframe's allowfullscreen attribute enables native fullscreen support
 
-  // Hero Image Carousel with dynamic image loading and enhanced animations
+  // Hero Image Carousel - Smooth transitions with portrait/landscape support
   const heroCarousel = document.querySelector('.hero-image-carousel');
   if (heroCarousel) {
-    // CONFIGURATION: Add any image filename with "hero" in the name to this array
-    // The carousel will automatically include all images listed here
-    // Example: ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG', 'hero-4.png']
-    const heroImageNames = ['hero-1.jpg', 'hero-2.jpg', 'hero-3.JPG','hero-4.jpg'];
+    const heroImages = Array.from(heroCarousel.querySelectorAll('.hero-image'));
     
-    // Check if there are existing images in HTML (for fallback/SEO)
-    const existingImages = heroCarousel.querySelectorAll('.hero-image');
-    let heroImages = [];
-    
-    if (existingImages.length > 0) {
-      // Use existing images from HTML
-      heroImages = Array.from(existingImages);
+    if (heroImages.length <= 1) {
+      // Single image, just ensure it's active
+      if (heroImages.length === 1) {
+        heroImages[0].classList.add('active');
+      }
+    } else {
+      // Multiple images - set up carousel
+      let currentIndex = 0;
+      let isTransitioning = false;
+      
       // Ensure first image is active
       heroImages.forEach((img, index) => {
         if (index === 0) {
@@ -1119,326 +1119,57 @@ ready(() => {
         } else {
           img.classList.remove('active');
         }
-        // Force eager loading so carousel can start promptly
+      });
+      
+      function transitionToNext() {
+        if (isTransitioning) return;
+        isTransitioning = true;
+        
+        const currentImg = heroImages[currentIndex];
+        const nextIndex = (currentIndex + 1) % heroImages.length;
+        const nextImg = heroImages[nextIndex];
+        
+        // Check orientation
+        const currentIsLandscape = currentImg.classList.contains('landscape');
+        const nextIsLandscape = nextImg.classList.contains('landscape');
+        
+        // Smooth fade out current image
+        currentImg.style.opacity = '0';
+        
+        // After fade out, switch images
+        setTimeout(() => {
+          currentImg.classList.remove('active');
+          nextImg.classList.add('active');
+          
+          // Reset current image opacity (for next time)
+          setTimeout(() => {
+            currentImg.style.opacity = '';
+          }, 50);
+          
+          // Fade in next image
+          nextImg.style.opacity = '0';
+          setTimeout(() => {
+            nextImg.style.opacity = '1';
+            
+            // Transition complete
+            setTimeout(() => {
+              isTransitioning = false;
+            }, 1200);
+          }, 50);
+        }, 1000);
+        
+        currentIndex = nextIndex;
+      }
+      
+      // Auto-rotate every 6 seconds (longer for landscape to show pan animation)
+      setInterval(transitionToNext, 6000);
+      
+      // Preload all images for smooth transitions
+      heroImages.forEach((img) => {
         if (img.loading === 'lazy') {
           img.loading = 'eager';
-          img.removeAttribute('loading');
         }
       });
-    } else {
-      // Create image elements dynamically from the configuration array
-      heroCarousel.innerHTML = '';
-      heroImageNames.forEach((imgName, index) => {
-        const img = document.createElement('img');
-        img.src = `./assets/images/${imgName}`;
-        img.alt = `ESDU Hero Image ${index + 1}`;
-        img.className = 'hero-image';
-        img.loading = 'eager';
-        if (index === 0) {
-          img.classList.add('active');
-        }
-        heroCarousel.appendChild(img);
-        heroImages.push(img);
-      });
     }
-    
-    // Enhanced animation effects with more variety
-    const effects = [
-      'fade',           // Classic fade
-      'fade-blur',      // Fade with blur
-      'zoom-in',        // Zoom in from center
-      'zoom-out',       // Zoom out from large
-      'slide-left',     // Slide from left
-      'slide-right',    // Slide from right
-      'slide-up',       // Slide from bottom
-      'slide-down',     // Slide from top
-      'rotate-in',      // Rotate while fading in
-      'flip-horizontal', // Flip horizontally
-      'flip-vertical',  // Flip vertically
-      'scale-bounce',   // Scale with bounce effect
-      'wipe-left',      // Wipe from left
-      'wipe-right',     // Wipe from right
-      'cross-zoom',     // Cross zoom (old zooms out, new zooms in)
-      'blur-focus'      // Blur to focus
-    ];
-    
-    let currentIndex = 0;
-    let isTransitioning = false;
-    
-    function getRandomEffect() {
-      return effects[Math.floor(Math.random() * effects.length)];
-    }
-    
-    function rotateHeroImages() {
-      if (isTransitioning || heroImages.length <= 1) return;
-      
-      isTransitioning = true;
-      const previousIndex = currentIndex;
-      currentIndex = (currentIndex + 1) % heroImages.length;
-      const effect = getRandomEffect();
-      
-      const prevImg = heroImages[previousIndex];
-      const nextImg = heroImages[currentIndex];
-      
-      // Remove all effect classes from all images
-      heroImages.forEach(img => {
-        img.classList.remove(
-          'active', 'fade-out', 'fade-in', 'fade-blur-in', 'fade-blur-out',
-          'zoom-in', 'zoom-out', 'zoom-in-effect', 'zoom-out-effect',
-          'slide-left', 'slide-right', 'slide-up', 'slide-down',
-          'slide-left-in', 'slide-right-in', 'slide-up-in', 'slide-down-in',
-          'rotate-in', 'flip-horizontal', 'flip-vertical',
-          'scale-bounce', 'wipe-left', 'wipe-right',
-          'cross-zoom-out', 'cross-zoom-in', 'blur-focus-in'
-        );
-        img.style.transform = '';
-        img.style.filter = '';
-        img.style.opacity = '';
-      });
-      
-      // Handle different animation effects
-      switch(effect) {
-        case 'fade':
-          prevImg.classList.add('fade-out');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            nextImg.classList.add('active', 'fade-in');
-            setTimeout(() => {
-              nextImg.classList.remove('fade-in');
-              isTransitioning = false;
-            }, 1500);
-          }, 800);
-          break;
-          
-        case 'fade-blur':
-          prevImg.classList.add('fade-blur-out');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-blur-out', 'active');
-            nextImg.classList.add('active', 'fade-blur-in');
-            setTimeout(() => {
-              nextImg.classList.remove('fade-blur-in');
-              isTransitioning = false;
-            }, 1500);
-          }, 800);
-          break;
-          
-        case 'zoom-in':
-          prevImg.classList.add('fade-out');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            nextImg.classList.add('active', 'zoom-in-effect');
-            setTimeout(() => {
-              nextImg.classList.remove('zoom-in-effect');
-              isTransitioning = false;
-            }, 1500);
-          }, 300);
-          break;
-          
-        case 'zoom-out':
-          prevImg.classList.add('zoom-out-effect');
-          setTimeout(() => {
-            prevImg.classList.remove('zoom-out-effect', 'active');
-            nextImg.classList.add('active', 'fade-in');
-            setTimeout(() => {
-              nextImg.classList.remove('fade-in');
-              isTransitioning = false;
-            }, 1500);
-          }, 300);
-          break;
-          
-        case 'slide-left':
-          prevImg.classList.add('slide-left');
-          nextImg.classList.add('active', 'slide-right-in');
-          setTimeout(() => {
-            prevImg.classList.remove('slide-left', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('slide-right-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'slide-right':
-          prevImg.classList.add('slide-right');
-          nextImg.classList.add('active', 'slide-left-in');
-          setTimeout(() => {
-            prevImg.classList.remove('slide-right', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('slide-left-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'slide-up':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'slide-up-in');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('slide-up-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'slide-down':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'slide-down-in');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('slide-down-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'rotate-in':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'rotate-in');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('rotate-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'flip-horizontal':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'flip-horizontal');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('flip-horizontal');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'flip-vertical':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'flip-vertical');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('flip-vertical');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'scale-bounce':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'scale-bounce');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('scale-bounce');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'wipe-left':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'wipe-left');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('wipe-left');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'wipe-right':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'wipe-right');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('wipe-right');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'cross-zoom':
-          prevImg.classList.add('cross-zoom-out');
-          nextImg.classList.add('active', 'cross-zoom-in');
-          setTimeout(() => {
-            prevImg.classList.remove('cross-zoom-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('cross-zoom-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1200);
-          break;
-          
-        case 'blur-focus':
-          prevImg.classList.add('fade-out');
-          nextImg.classList.add('active', 'blur-focus-in');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            setTimeout(() => {
-              nextImg.classList.remove('blur-focus-in');
-              isTransitioning = false;
-            }, 100);
-          }, 1500);
-          break;
-          
-        default:
-          // Fallback to fade
-          prevImg.classList.add('fade-out');
-          setTimeout(() => {
-            prevImg.classList.remove('fade-out', 'active');
-            nextImg.classList.add('active', 'fade-in');
-            setTimeout(() => {
-              nextImg.classList.remove('fade-in');
-              isTransitioning = false;
-            }, 1500);
-          }, 800);
-      }
-    }
-    
-    // Wait for images to load before starting carousel
-    let imagesLoaded = 0;
-    const minImagesToStart = Math.min(heroImages.length, 2);
-    let carouselStarted = false;
-    
-    function startCarouselIfReady(force = false) {
-      if (!carouselStarted && heroImages.length > 1 && (force || imagesLoaded >= minImagesToStart)) {
-        carouselStarted = true;
-        setInterval(rotateHeroImages, 5000);
-      }
-    }
-    
-    heroImages.forEach(img => {
-      if (img.complete) {
-        imagesLoaded++;
-        startCarouselIfReady();
-      } else {
-        img.addEventListener('load', () => {
-          imagesLoaded++;
-          startCarouselIfReady();
-        });
-        img.addEventListener('error', () => {
-          imagesLoaded++;
-          // Remove broken image from array
-          const index = heroImages.indexOf(img);
-          if (index > -1) {
-            heroImages.splice(index, 1);
-            img.remove();
-          }
-          startCarouselIfReady();
-        });
-      }
-    });
-
-    // Fallback: start carousel after a short delay even if not all lazy images reported loaded
-    setTimeout(() => startCarouselIfReady(true), 3500);
   }
 });
