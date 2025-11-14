@@ -71,55 +71,51 @@
 
     <main id="main">
 
-      <section id="home" class="section hero" aria-label="ESDU Hero">
+      <!-- Logo Section - Above Background -->
+      <section class="hero-logo-section">
         <div class="container">
           <div class="hero-logo-center">
             <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" alt="ESDU 25th Anniversary Logo" class="hero-logo-main" decoding="async" />
           </div>
+        </div>
+      </section>
+
+      <!-- Hero Background Carousel Section -->
+      <section id="home" class="section hero" aria-label="ESDU Hero">
+        <!-- Background Image Carousel -->
+        <div class="hero-background-carousel" aria-hidden="true">
+          <div class="hero-bg-image active" style="background-image: url('./assets/images/hero-0.jpg');"></div>
+          <div class="hero-bg-image" style="background-image: url('./assets/images/hero-1.jpg');"></div>
+          <div class="hero-bg-image" style="background-image: url('./assets/images/hero-2.jpg');"></div>
+          <div class="hero-overlay"></div>
+        </div>
+        
+        <!-- Content Container -->
+        <div class="container hero-content">
           <h2 class="hero-main-title">Exploring Solutions, Defying Uncertainties</h2>
           <h2 class="hero-main-title hero-main-title-second">25 Years of Sustainable Community Development</h2>
-        </div>
-        <div class="container hero-inner">
-          <div class="hero-copy">
-            <div class="hero-brand">
-              <h2 class="hero-esdu">
-                <div class="esdu-line">
-                  <span class="esdu-letter">E</span>
-                  <span class="esdu-text"><span class="esdu-first-word">xploring</span> Sustainable Pathways for Rural Resilience</span>
-                </div>
-                <div class="esdu-line">
-                  <span class="esdu-letter">S</span>
-                  <span class="esdu-text"><span class="esdu-first-word">olutions</span> Through Climate-Smart Agriculture & Innovation</span>
-                </div>
-                <div class="esdu-line">
-                  <span class="esdu-letter">D</span>
-                  <span class="esdu-text"><span class="esdu-first-word">efying</span> Food Insecurity with Community-Led Development</span>
-                </div>
-                <div class="esdu-line">
-                  <span class="esdu-letter">U</span>
-                  <span class="esdu-text"><span class="esdu-first-word">ncertainties</span> Transformed into Opportunities for Growth</span>
-                </div>
-              </h2>
+          
+          <div class="hero-brand">
+            <div class="hero-esdu-image">
+              <img src="./assets/images/ESDU News Coverage Posts (2).png" alt="ESDU: Exploring Solutions, Defying Uncertainties" class="esdu-acronym-img" />
             </div>
-            <br>
-            <br>
-            <br>
+          </div>
+        </div>
+      </section>
+
+      <!-- Description and CTA Section - Below Background -->
+      <section class="hero-bottom-section">
+        <div class="container">
+          <div class="hero-description">
             <p>
               The Environmental Sustainability Development Unit (ESDU) at the American University of Beirut (AUB) champions community-led development, resilient food systems, and inclusive growth—
               bridging academia and the field.
             </p>
-            <div class="hero-ctas">
-              <a href="#story" class="btn primary">See the Journey</a>
-              <a href="#impact" class="btn ghost">Explore Impact</a>
-
-            </div>
           </div>
-          <div class="hero-visual" aria-hidden="true">
-            <div class="hero-image-carousel">
-              <img src="./assets/images/hero-0.jpg" alt="ESDU Women Keepers of the Land" class="hero-image active" fetchpriority="high" decoding="async" />
-              <img src="./assets/images/hero-1.jpg" alt="ESDU Community Impact" class="hero-image" loading="lazy" />
-              <img src="./assets/images/hero-2.jpg" alt="ESDU Research & Innovation" class="hero-image" loading="lazy" />
-            </div>
+          
+          <div class="hero-ctas">
+            <a href="#story" class="btn primary">See the Journey</a>
+            <a href="#impact" class="btn ghost">Explore Impact</a>
           </div>
         </div>
       </section>

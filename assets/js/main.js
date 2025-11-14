@@ -1097,23 +1097,22 @@ ready(() => {
   // Note: Google Drive iframe handles fullscreen internally, no additional JS needed
   // The iframe's allowfullscreen attribute enables native fullscreen support
 
-  // Hero Image Carousel - Smooth transitions with portrait/landscape support
-  const heroCarousel = document.querySelector('.hero-image-carousel');
-  if (heroCarousel) {
-    const heroImages = Array.from(heroCarousel.querySelectorAll('.hero-image'));
+  // Hero Background Carousel - Smooth transitions
+  const heroBackgroundCarousel = document.querySelector('.hero-background-carousel');
+  if (heroBackgroundCarousel) {
+    const bgImages = Array.from(heroBackgroundCarousel.querySelectorAll('.hero-bg-image'));
     
-    if (heroImages.length <= 1) {
+    if (bgImages.length <= 1) {
       // Single image, just ensure it's active
-      if (heroImages.length === 1) {
-        heroImages[0].classList.add('active');
+      if (bgImages.length === 1) {
+        bgImages[0].classList.add('active');
       }
     } else {
       // Multiple images - set up carousel
       let currentIndex = 0;
-      let isTransitioning = false;
       
       // Ensure first image is active
-      heroImages.forEach((img, index) => {
+      bgImages.forEach((img, index) => {
         if (index === 0) {
           img.classList.add('active');
         } else {
@@ -1122,54 +1121,35 @@ ready(() => {
       });
       
       function transitionToNext() {
-        if (isTransitioning) return;
-        isTransitioning = true;
+        const currentImg = bgImages[currentIndex];
+        const nextIndex = (currentIndex + 1) % bgImages.length;
+        const nextImg = bgImages[nextIndex];
         
-        const currentImg = heroImages[currentIndex];
-        const nextIndex = (currentIndex + 1) % heroImages.length;
-        const nextImg = heroImages[nextIndex];
-        
-        // Check orientation
-        const currentIsLandscape = currentImg.classList.contains('landscape');
-        const nextIsLandscape = nextImg.classList.contains('landscape');
-        
-        // Smooth fade out current image
+        // Fade out current
         currentImg.style.opacity = '0';
         
-        // After fade out, switch images
+        // After fade out, switch active state
         setTimeout(() => {
           currentImg.classList.remove('active');
           nextImg.classList.add('active');
           
-          // Reset current image opacity (for next time)
+          // Reset current for next cycle
           setTimeout(() => {
             currentImg.style.opacity = '';
-          }, 50);
+          }, 100);
           
-          // Fade in next image
+          // Fade in next
           nextImg.style.opacity = '0';
-          setTimeout(() => {
+          requestAnimationFrame(() => {
             nextImg.style.opacity = '1';
-            
-            // Transition complete
-            setTimeout(() => {
-              isTransitioning = false;
-            }, 1200);
-          }, 50);
-        }, 1000);
+          });
+        }, 1500);
         
         currentIndex = nextIndex;
       }
       
-      // Auto-rotate every 6 seconds (longer for landscape to show pan animation)
+      // Auto-rotate every 6 seconds
       setInterval(transitionToNext, 6000);
-      
-      // Preload all images for smooth transitions
-      heroImages.forEach((img) => {
-        if (img.loading === 'lazy') {
-          img.loading = 'eager';
-        }
-      });
     }
   }
 });
