@@ -1272,8 +1272,13 @@ img.image-error {
 
 /* Video Player */
 .video-player-wrapper {
-  margin: 2rem 0 3rem;
+  margin: 3rem 0 0;
   width: 100%;
+  padding: 2rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.8));
+  border-radius: 1.5rem;
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(132,1,50,0.08), 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .video-container {
@@ -1283,10 +1288,17 @@ img.image-error {
   margin: 0 auto;
   aspect-ratio: 16 / 9;
   border-radius: 1rem;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(132,1,50,0.1);
   background: #000;
-  border: 1px solid var(--line);
+  border: 2px solid rgba(132,1,50,0.15);
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.video-container:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(132,1,50,0.2);
+  border-color: rgba(132,1,50,0.25);
+  transform: translateY(-2px);
 }
 
 .video-container iframe,
@@ -1297,13 +1309,15 @@ img.image-error {
   width: 100%;
   height: 100%;
   border: 0;
-  border-radius: 1rem;
+  border-radius: calc(1rem - 2px);
   display: block;
 }
 
 @media (max-width: 640px) {
   .video-player-wrapper {
-    margin: 1.5rem 0 2rem;
+    margin: 2rem 0 0;
+    padding: 1rem;
+    border-radius: 1rem;
   }
   
   .video-container {
@@ -1313,7 +1327,7 @@ img.image-error {
   
   .video-container iframe,
   .video-container video {
-    border-radius: 0.75rem;
+    border-radius: calc(0.75rem - 2px);
   }
 }
 
