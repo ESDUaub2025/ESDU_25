@@ -1153,3 +1153,33 @@ ready(() => {
     }
   }
 });
+
+// Video autoplay on scroll
+ready(() => {
+  const video = document.querySelector('[data-autoplay-on-scroll]');
+  if (!video) return;
+
+  let hasPlayed = false;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasPlayed) {
+        // Video is in viewport, start playing
+        video.play().then(() => {
+          hasPlayed = true;
+          // Unmute after starting (user can control volume)
+          setTimeout(() => {
+            video.muted = false;
+          }, 500);
+        }).catch(err => {
+          console.log('Autoplay prevented:', err);
+          // Autoplay was prevented, user will need to click play
+        });
+      }
+    });
+  }, {
+    threshold: 0.5 // Trigger when 50% of video is visible
+  });
+
+  observer.observe(video);
+});
