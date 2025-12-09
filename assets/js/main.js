@@ -57,10 +57,28 @@ ready(() => {
   const nav = document.querySelector('.site-nav');
   const toggle = document.querySelector('.nav-toggle');
   if (nav && toggle) {
-    toggle.addEventListener('click', () => {
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent immediate closing
       const expanded = nav.getAttribute('aria-expanded') === 'true';
       nav.setAttribute('aria-expanded', String(!expanded));
       toggle.setAttribute('aria-expanded', String(!expanded));
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const expanded = nav.getAttribute('aria-expanded') === 'true';
+      if (expanded && !nav.contains(e.target)) {
+        nav.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close menu when clicking a link
+    nav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        nav.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
     });
   }
 
@@ -70,114 +88,123 @@ ready(() => {
   }, { threshold: 0.15 });
   document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card').forEach(el => io.observe(el));
   
-  // 3D Tilt Effect for Donor Cards - Enhanced and faster
+  // Proximity Lift Effect for Donor Cards (No Crowding)
   const donorCards = document.querySelectorAll('.donor-card');
+  const visibleCards = new Set();
+  
+  // Track which cards are visible to optimize performance
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        visibleCards.add(entry.target);
+        // Set transition for smooth movement
+        entry.target.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, background 0.4s ease, border-color 0.4s ease';
+      } else {
+        visibleCards.delete(entry.target);
+        entry.target.style.transform = '';
+      }
+    });
+  }, { threshold: 0 });
   
   donorCards.forEach(card => {
-    let isHovering = false;
-    let currentRotationX = 0;
-    let currentRotationY = 0;
-    let targetRotationX = 0;
-    let targetRotationY = 0;
-    let animationFrame = null;
-    
-    // Ensure transform is controlled by JS, not CSS - remove transform from transition
-    card.style.transition = 'opacity 0.6s ease, box-shadow 0.2s ease-out, border-color 0.2s ease-out, background 0.2s ease-out';
-    // Set initial transform to ensure JS control
-    if (card.classList.contains('visible')) {
-      card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
-    }
-    
-    const updateTransform = () => {
-      animationFrame = null;
+    cardObserver.observe(card);
+  });
+
+  let mouseX = -1000;
+  let mouseY = -1000;
+  let rafId = null;
+  
+  // Check if mobile/touch
+  const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth < 900;
+
+  function updateCards() {
+    if (isTouch) {
+      // Mobile: Center Focus Effect (Scroll-driven)
+      const viewportCenterY = window.innerHeight / 2;
       
-      if (!isHovering) {
-        // Smoothly return to neutral
-        currentRotationX *= 0.85;
-        currentRotationY *= 0.85;
+      visibleCards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const cardCenterY = rect.top + rect.height / 2;
         
-        if (Math.abs(currentRotationX) < 0.1 && Math.abs(currentRotationY) < 0.1) {
-          currentRotationX = 0;
-          currentRotationY = 0;
-          card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
-          return;
+        // Distance from vertical center of viewport
+        const distY = Math.abs(viewportCenterY - cardCenterY);
+        const threshold = window.innerHeight * 0.35; // Focus area (35% of screen height)
+        
+        if (distY < threshold) {
+          const intensity = 1 - (distY / threshold);
+          const ease = 1 - Math.pow(1 - intensity, 2);
+          
+          const scale = 1 + (0.04 * ease);
+          const lift = -4 * ease;
+          
+          card.style.transform = `translateY(${lift}px) scale(${scale})`;
+          
+          // Add active class for CSS styling (border color, shadow)
+          if (intensity > 0.6) {
+            card.classList.add('mobile-active');
+          } else {
+            card.classList.remove('mobile-active');
+          }
+        } else {
+          card.style.transform = '';
+          card.classList.remove('mobile-active');
         }
-      } else {
-        // Smoothly interpolate to target (fast interpolation for responsiveness)
-        currentRotationX += (targetRotationX - currentRotationX) * 0.3;
-        currentRotationY += (targetRotationY - currentRotationY) * 0.3;
-      }
-      
-      // Apply 3D transform with lift
-      card.style.transform = `translateY(-12px) rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg) scale(1.02)`;
-      
-      if (isHovering || Math.abs(currentRotationX) > 0.1 || Math.abs(currentRotationY) > 0.1) {
-        animationFrame = requestAnimationFrame(updateTransform);
-      }
-    };
-    
-    const handleMouseMove = (e) => {
-      if (!isHovering || !card.classList.contains('visible')) return;
-      
-      const rect = card.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
-      
-      const deltaX = mouseX - centerX;
-      const deltaY = mouseY - centerY;
-      
-      // Calculate rotation angles (max 25 degrees for more noticeable effect)
-      const maxRotation = 25;
-      targetRotationY = (deltaX / (rect.width / 2)) * maxRotation;
-      targetRotationX = -(deltaY / (rect.height / 2)) * maxRotation;
-      
-      // Clamp values
-      targetRotationX = Math.max(-maxRotation, Math.min(maxRotation, targetRotationX));
-      targetRotationY = Math.max(-maxRotation, Math.min(maxRotation, targetRotationY));
-      
-      if (!animationFrame) {
-        updateTransform();
-      }
-    };
-    
-    const handleMouseEnter = (e) => {
-      if (!card.classList.contains('visible')) return;
-      isHovering = true;
-      // Trigger initial calculation on enter
-      handleMouseMove(e);
-      if (!animationFrame) {
-        updateTransform();
-      }
-    };
-    
-    const handleMouseLeave = () => {
-      isHovering = false;
-      targetRotationX = 0;
-      targetRotationY = 0;
-      if (!animationFrame) {
-        updateTransform();
-      }
-    };
-    
-    // Watch for when card becomes visible
-    const visibilityObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          if (card.classList.contains('visible') && !isHovering) {
-            card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+      });
+    } else {
+      // Desktop: Mouse Proximity Effect
+      visibleCards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const cardCenterX = rect.left + rect.width / 2;
+        const cardCenterY = rect.top + rect.height / 2;
+        
+        const deltaX = mouseX - cardCenterX;
+        const deltaY = mouseY - cardCenterY;
+        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        const threshold = 250; // Radius of influence in pixels
+        
+        if (dist < threshold) {
+          // Calculate intensity (0 to 1)
+          const intensity = Math.max(0, 1 - (dist / threshold));
+          // Smooth ease-out curve for natural feel
+          const ease = 1 - Math.pow(1 - intensity, 2);
+          
+          // Scale up slightly (no translation to avoid crowding)
+          const scale = 1 + (0.06 * ease);
+          // Lift up slightly
+          const lift = -8 * ease;
+          
+          card.style.transform = `translateY(${lift}px) scale(${scale})`;
+        } else {
+          if (card.style.transform && card.style.transform !== '') {
+            card.style.transform = '';
           }
         }
       });
-    });
-    visibilityObserver.observe(card, { attributes: true, attributeFilter: ['class'] });
+    }
     
-    card.addEventListener('mousemove', handleMouseMove, { passive: true });
-    card.addEventListener('mouseenter', handleMouseEnter);
-    card.addEventListener('mouseleave', handleMouseLeave);
-  });
+    rafId = null;
+  }
+
+  const onMove = (e) => {
+    if (isTouch) return;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!rafId) {
+      rafId = requestAnimationFrame(updateCards);
+    }
+  };
+
+  if (!isTouch) {
+    document.addEventListener('mousemove', onMove, { passive: true });
+  }
+  
+  // Update on scroll as elements move relative to viewport
+  window.addEventListener('scroll', () => {
+    if (!rafId) {
+      rafId = requestAnimationFrame(updateCards);
+    }
+  }, { passive: true });
   
   // Additional observers for sections and map
   const sectionIo = new IntersectionObserver((entries) => {
@@ -1093,9 +1120,7 @@ ready(() => {
 
 // Video fullscreen handling for better cross-platform support (for iframe embeds)
 ready(() => {
-  const videoIframe = document.querySelector('.esdu-video-iframe');
-  // Note: Google Drive iframe handles fullscreen internally, no additional JS needed
-  // The iframe's allowfullscreen attribute enables native fullscreen support
+
 
   // Hero Background Carousel - Smooth transitions
   const heroBackgroundCarousel = document.querySelector('.hero-background-carousel');

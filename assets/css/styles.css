@@ -359,6 +359,19 @@ a:hover { text-decoration: underline; }
   transition: background 0.3s ease;
 }
 
+@media (max-width: 640px) {
+  .hero-overlay {
+    /* Darker overlay on mobile for better text contrast */
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.3) 40%,
+      rgba(0, 0, 0, 0.3) 60%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+}
+
 /* Content Container - Centered and Above Background */
 .hero-content {
   position: relative;
@@ -1486,206 +1499,7 @@ img.image-error {
   }
 }
 
-/* Video Section */
-.video-container {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
-.video-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--line);
-  background: #000;
-  padding: 0;
-  aspect-ratio: 16 / 9;
-  /* Fallback for browsers that don't support aspect-ratio */
-  padding-bottom: 56.25%; /* 16:9 ratio */
-  height: 0;
-}
-
-/* Video Poster/Thumbnail */
-.video-poster {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  background: var(--tint-gray);
-  z-index: 2;
-}
-
-.video-poster .video-thumbnail {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.video-play-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  transition: background 0.3s ease;
-}
-
-.video-poster:hover .video-play-overlay {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.video-play-overlay .play-icon {
-  width: 80px;
-  height: 80px;
-  color: white;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
-}
-
-.video-poster:hover .play-icon {
-  transform: scale(1.1);
-}
-
-/* Hide poster when video is playing */
-.video-wrapper.has-video .video-poster {
-  display: none;
-}
-
-.video-wrapper > .esdu-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.esdu-video {
-  width: 100%;
-  height: 100%;
-  display: block;
-  -o-object-fit: contain;
-  object-fit: contain;
-  background: #000;
-  border-radius: 1rem;
-}
-
-/* Google Drive iframe styling */
-.esdu-video-iframe {
-  border: none;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-/* Remove white overlay from video controls */
-.esdu-video::-webkit-media-controls-panel {
-  background-color: transparent !important;
-  background-image: none !important;
-}
-
-.esdu-video::-webkit-media-controls-enclosure {
-  background-color: transparent !important;
-  background-image: none !important;
-}
-
-.esdu-video::-webkit-media-controls {
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.esdu-video:hover::-webkit-media-controls {
-  opacity: 1;
-}
-
-.esdu-video::-webkit-media-controls-play-button {
-  background-color: rgba(132, 1, 50, 0.8);
-  border-radius: 50%;
-  color: #fff;
-}
-
-.esdu-video::-webkit-media-controls-timeline {
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 2px;
-}
-
-.esdu-video::-webkit-media-controls-current-time-display,
-.esdu-video::-webkit-media-controls-time-remaining-display {
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.esdu-video::-webkit-media-controls-volume-slider {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.esdu-video::-webkit-media-controls-mute-button {
-  color: #fff;
-}
-
-/* For Firefox */
-.esdu-video::-moz-media-controls-panel {
-  background-color: transparent !important;
-}
-
-.esdu-video::-moz-media-controls-overlay {
-  background-color: transparent !important;
-}
-
-/* Prevent poster from showing on hover */
-.esdu-video:hover {
-  object-fit: contain;
-}
-
-/* Ensure fullscreen video shows completely without cropping */
-.esdu-video:-webkit-full-screen {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-}
-
-.esdu-video:-moz-full-screen {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-}
-
-.esdu-video:-ms-fullscreen {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-}
-
-.esdu-video:fullscreen {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-}
-
-@media (max-width: 900px) {
-  .video-wrapper {
-    max-width: 100%;
-  }
-  
-  .video-container {
-    margin-top: 1.5rem;
-  }
-}
 
 /* Strategic Goals */
 .goals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
@@ -2162,7 +1976,7 @@ img.image-error {
 /* Responsive Donor Grid */
 @media (max-width: 900px) {
   .donor-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
   }
   
@@ -2178,24 +1992,69 @@ img.image-error {
 
 @media (max-width: 640px) {
   .donor-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    /* Keep 2 columns on mobile for better density */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     padding: 1rem 0;
   }
   
   .donor-card {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.5rem;
     min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .donor-card span {
-    font-size: 1rem;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    /* Ensure text doesn't overflow */
+    word-break: break-word; 
   }
   
   .donor-card a {
-    padding: 0.5rem;
+    padding: 0.25rem;
   }
+  
+  /* Mobile Focus State (Scroll-driven) */
+  .donor-card.mobile-active {
+    border-color: var(--brand);
+    box-shadow: 0 8px 24px rgba(132, 1, 50, 0.2);
+    background: linear-gradient(135deg, rgba(214, 122, 143, 0.2), rgba(132, 1, 50, 0.1));
+  }
+  
+  #projects .donor-card.mobile-active {
+    background: #ffffff;
+    border-color: var(--brand);
+    box-shadow: 0 8px 24px rgba(132, 1, 50, 0.15);
+  }
+  
+  #projects .donor-card.mobile-active span {
+    color: var(--brand);
+  }
+}
+
+/* Project Cards - Minimalist Override */
+#projects .donor-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#projects .donor-card:hover {
+  background: #ffffff;
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(132, 1, 50, 0.15);
+  transform: translateY(-4px);
+}
+
+#projects .donor-card span {
+  color: var(--ink);
+}
+
+#projects .donor-card:hover span {
+  color: var(--brand);
 }
 
 /* ESDU Ecosystem - Uniform Grid with Scroll Animations */
