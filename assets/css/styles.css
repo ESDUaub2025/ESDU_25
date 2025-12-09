@@ -1344,6 +1344,35 @@ img.image-error {
   }
 }
 
+/* Video Play Button Styles */
+.video-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.video-play-button {
+  display: block;
+  width: 68px;
+  height: 48px;
+  transition: transform 0.2s ease;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.video-container:hover .video-play-button {
+  transform: scale(1.1);
+}
+
+.video-play-bg {
+  fill: #FF0000;
+  transition: fill 0.2s ease;
+}
+
+.video-container:hover .video-play-bg {
+  fill: #CC0000;
+}
+
 /* Timeline – manual navigation */
 .timeline-wrapper {
   position: relative;
