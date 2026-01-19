@@ -2296,3 +2296,100 @@ img.image-error {
 /* Utilities */
 [data-reveal] { opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s ease; }
 [data-reveal].visible { opacity: 1; transform: none; }
+
+/* ========================================
+   PDF Download Button Styles
+   ======================================== */
+.pdf-download-btn {
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  padding: .4rem .6rem;
+  border-radius: .5rem;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-height: 36px;
+}
+
+.pdf-download-btn:hover {
+  background: var(--brand-ink);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(132, 1, 50, 0.3);
+}
+
+.pdf-download-btn:active {
+  transform: translateY(0);
+}
+
+.pdf-download-btn:disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 840px) {
+  .pdf-download-btn {
+    padding: .75rem 1rem;
+    font-size: 1rem;
+    width: 100%;
+    display: block;
+  }
+}
+
+/* ========================================
+   PDF-Friendly Print Styles
+   ======================================== */
+@media print {
+  /* Hide unnecessary elements */
+  .site-header,
+  .nav-toggle,
+  .site-nav,
+  .pdf-download-btn,
+  .hero-ctas,
+  .slider-controls,
+  .carousel-controls,
+  .timeline-controls,
+  button,
+  .skip-link {
+    display: none !important;
+  }
+  
+  /* Reset backgrounds for print */
+  body {
+    background: white !important;
+  }
+  
+  .section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .card, .slide, .goal-card, .initiative-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  /* Ensure images fit properly */
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+  
+  /* Better typography for print */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Optimize colors for print */
+  .bg-rose, .bg-amber, .bg-teal {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -1208,3 +1208,75 @@ ready(() => {
 
   observer.observe(video);
 });
+
+// ========================================
+// PDF Download Functionality
+// ========================================
+
+ready(() => {
+  const pdfBtn = document.getElementById('download-pdf-btn');
+  
+  if (pdfBtn && typeof html2pdf !== 'undefined') {
+    pdfBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Show loading state
+      const originalText = pdfBtn.textContent;
+      pdfBtn.textContent = 'Generating PDF...';
+      pdfBtn.disabled = true;
+      
+      // Get current date for filename
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const filename = `ESDU portfolio ${dateStr}.pdf`;
+      
+      // Clone the main content for PDF generation
+      const element = document.querySelector('main');
+      
+      // PDF options for better formatting
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.85 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          letterRendering: true,
+          allowTaint: false,
+          backgroundColor: '#ffffff'
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { 
+          mode: ['avoid-all', 'css', 'legacy'],
+          before: '.section',
+          avoid: ['img', '.card', '.slide', '.timeline-item', '.goal-card']
+        }
+      };
+      
+      // Generate PDF
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+          // Reset button state
+          pdfBtn.textContent = originalText;
+          pdfBtn.disabled = false;
+        })
+        .catch((error) => {
+          console.error('PDF generation error:', error);
+          pdfBtn.textContent = 'Download PDF (Error)';
+          pdfBtn.disabled = false;
+          setTimeout(() => {
+            pdfBtn.textContent = originalText;
+          }, 3000);
+        });
+    });
+  }
+});

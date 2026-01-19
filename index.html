@@ -23,6 +23,12 @@
     <meta property="og:image" content="https://example.org/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 
@@ -36,6 +42,9 @@
 
     <link rel="stylesheet" href="./assets/css/styles.css" />
     <link rel="stylesheet" href="./assets/css/animations.css" />
+    
+    <!-- html2pdf.js library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -64,6 +73,7 @@
             <li><a href="#impact">Impact</a></li>
             <li><a href="#partners">Partners and Donors</a></li>
             <li><a href="#resources">Resources</a></li>
+            <li><button id="download-pdf-btn" class="pdf-download-btn" aria-label="Download Portfolio as PDF">Download PDF</button></li>
           </ul>
         </nav>
       </div>
