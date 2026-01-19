@@ -1230,20 +1230,20 @@ ready(() => {
       const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
       const filename = `ESDU portfolio ${dateStr}.pdf`;
       
-      // Clone the main content for PDF generation
-      const element = document.querySelector('main');
+      // Create a clean PDF-friendly version of the content
+      const pdfContainer = createPDFContent();
       
       // PDF options for better formatting
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [15, 15, 15, 15],
         filename: filename,
-        image: { type: 'jpeg', quality: 0.85 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
           useCORS: true,
           logging: false,
           letterRendering: true,
-          allowTaint: false,
+          windowWidth: 1200,
           backgroundColor: '#ffffff'
         },
         jsPDF: { 
@@ -1254,23 +1254,28 @@ ready(() => {
         },
         pagebreak: { 
           mode: ['avoid-all', 'css', 'legacy'],
-          before: '.section',
-          avoid: ['img', '.card', '.slide', '.timeline-item', '.goal-card']
+          before: '.pdf-section',
+          after: ['.pdf-page-break'],
+          avoid: ['img', '.pdf-card', '.pdf-list-item']
         }
       };
       
       // Generate PDF
       html2pdf()
         .set(opt)
-        .from(element)
+        .from(pdfContainer)
         .save()
         .then(() => {
-          // Reset button state
+          // Clean up
+          document.body.removeChild(pdfContainer);
           pdfBtn.textContent = originalText;
           pdfBtn.disabled = false;
         })
         .catch((error) => {
           console.error('PDF generation error:', error);
+          if (pdfContainer && pdfContainer.parentNode) {
+            document.body.removeChild(pdfContainer);
+          }
           pdfBtn.textContent = 'Download PDF (Error)';
           pdfBtn.disabled = false;
           setTimeout(() => {
@@ -1278,5 +1283,283 @@ ready(() => {
           }, 3000);
         });
     });
+  }
+  
+  // Function to create clean PDF content
+  function createPDFContent() {
+    const container = document.createElement('div');
+    container.id = 'pdf-content';
+    container.style.cssText = `
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      width: 210mm;
+      background: white;
+      font-family: 'Montserrat', Arial, sans-serif;
+      color: #000;
+      padding: 20px;
+    `;
+    
+    // Cover page with logo
+    const coverPage = `
+      <div style="text-align: center; padding: 40px 0; page-break-after: always;">
+        <img src="./assets/images/ESDU 25th Anniversary _ Logo _ Final-02.png" 
+             style="max-width: 400px; margin: 40px auto;" alt="ESDU Logo"/>
+        <h1 style="color: #840132; font-size: 32px; margin: 30px 0 10px;">
+          Exploring Solutions, Defying Uncertainties
+        </h1>
+        <h2 style="color: #4d4d4d; font-size: 24px; margin: 10px 0 40px;">
+          25 Years of Sustainable Community Development
+        </h2>
+        <p style="color: #4d4d4d; font-size: 14px; line-height: 1.8; max-width: 600px; margin: 20px auto;">
+          The Environmental Sustainability Development Unit (ESDU) at the American University of Beirut (AUB) 
+          champions community-led development, resilient food systems, and inclusive growth—bridging academia and the field.
+        </p>
+        <p style="color: #808080; font-size: 12px; margin-top: 60px;">
+          Generated on: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </p>
+      </div>
+    `;
+    
+    container.innerHTML = coverPage;
+    
+    // Extract Mission, Vision, Core Values
+    const missionSection = document.querySelector('#mission');
+    if (missionSection) {
+      const sectionTitle = missionSection.querySelector('.section-head h2')?.textContent || 'Mission, Vision, Core Values';
+      const sectionDesc = missionSection.querySelector('.section-head p')?.textContent || '';
+      
+      let missionContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      const cards = missionSection.querySelectorAll('.card');
+      cards.forEach(card => {
+        const title = card.querySelector('h3')?.textContent || '';
+        const text = card.querySelector('p')?.textContent || '';
+        const img = card.querySelector('img');
+        
+        if (title && text) {
+          missionContent += `
+            <div class="pdf-card" style="margin-bottom: 25px; padding: 15px; background: #f7f7f7; border-radius: 8px;">
+              ${img ? `<img src="${img.src}" style="width: 100%; max-width: 600px; height: auto; border-radius: 5px; margin-bottom: 10px;" alt="${title}"/>` : ''}
+              <h3 style="color: #840132; font-size: 20px; margin: 10px 0;">${title}</h3>
+              <p style="color: #4d4d4d; font-size: 14px; line-height: 1.6;">${text}</p>
+            </div>
+          `;
+        } else if (title === 'Core Values') {
+          const values = card.querySelectorAll('.pill-list li');
+          missionContent += `
+            <div class="pdf-card" style="margin-bottom: 25px; padding: 15px; background: #f7f7f7; border-radius: 8px;">
+              <h3 style="color: #840132; font-size: 20px; margin: 10px 0 15px;">Core Values</h3>
+              <ul style="list-style: none; padding: 0; margin: 0;">
+          `;
+          values.forEach(value => {
+            missionContent += `
+              <li style="color: #4d4d4d; font-size: 13px; line-height: 1.6; margin-bottom: 8px; padding-left: 20px; position: relative;">
+                <span style="position: absolute; left: 0; color: #840132;">•</span>
+                ${value.textContent}
+              </li>
+            `;
+          });
+          missionContent += `</ul></div>`;
+        }
+      });
+      
+      missionContent += `</div>`;
+      container.innerHTML += missionContent;
+    }
+    
+    // Extract ESDU at Work
+    const workSection = document.querySelector('#work');
+    if (workSection) {
+      const sectionTitle = workSection.querySelector('.section-head h2')?.textContent || 'ESDU at Work';
+      const sectionDesc = workSection.querySelector('.section-head p')?.textContent || '';
+      
+      let workContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      const slides = workSection.querySelectorAll('.slide');
+      slides.forEach(slide => {
+        const title = slide.querySelector('h3')?.textContent || '';
+        const text = slide.querySelector('p')?.textContent || '';
+        const img = slide.querySelector('img');
+        
+        workContent += `
+          <div class="pdf-card" style="margin-bottom: 25px; padding: 15px; background: #f7f7f7; border-radius: 8px;">
+            ${img ? `<img src="${img.src}" style="width: 100%; max-width: 600px; height: auto; border-radius: 5px; margin-bottom: 10px;" alt="${title}"/>` : ''}
+            <h3 style="color: #840132; font-size: 18px; margin: 10px 0;">${title}</h3>
+            <p style="color: #4d4d4d; font-size: 14px; line-height: 1.6;">${text}</p>
+          </div>
+        `;
+      });
+      
+      workContent += `</div>`;
+      container.innerHTML += workContent;
+    }
+    
+    // Extract Strategic Goals
+    const goalsSection = document.querySelector('#goals');
+    if (goalsSection) {
+      const sectionTitle = goalsSection.querySelector('.section-head h2')?.textContent || 'Strategic Goals';
+      const sectionDesc = goalsSection.querySelector('.section-head p')?.textContent || '';
+      
+      let goalsContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      const goals = goalsSection.querySelectorAll('.goal-card');
+      goals.forEach(goal => {
+        const title = goal.querySelector('h3')?.textContent || '';
+        const text = goal.querySelector('p')?.textContent || '';
+        const img = goal.querySelector('img');
+        
+        goalsContent += `
+          <div class="pdf-card" style="margin-bottom: 25px; padding: 15px; background: #f7f7f7; border-radius: 8px;">
+            ${img ? `<img src="${img.src}" style="width: 100%; max-width: 600px; height: auto; border-radius: 5px; margin-bottom: 10px;" alt="${title}"/>` : ''}
+            <h3 style="color: #840132; font-size: 18px; margin: 10px 0;">${title}</h3>
+            <p style="color: #4d4d4d; font-size: 14px; line-height: 1.6;">${text}</p>
+          </div>
+        `;
+      });
+      
+      goalsContent += `</div>`;
+      container.innerHTML += goalsContent;
+    }
+    
+    // Extract Keepers of the Land
+    const keepersSection = document.querySelector('#keepers');
+    if (keepersSection) {
+      const sectionTitle = keepersSection.querySelector('.section-head h2')?.textContent || 'Keepers of the Land';
+      const sectionDesc = keepersSection.querySelector('.section-head p')?.textContent || '';
+      
+      let keepersContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      const initiatives = keepersSection.querySelectorAll('.initiative-item');
+      initiatives.forEach(item => {
+        const title = item.querySelector('h3')?.textContent || '';
+        const text = item.querySelector('p')?.textContent || '';
+        const img = item.querySelector('img');
+        
+        keepersContent += `
+          <div class="pdf-card" style="margin-bottom: 25px; padding: 15px; background: #f7f7f7; border-radius: 8px;">
+            ${img ? `<img src="${img.src}" style="width: 100%; max-width: 600px; height: auto; border-radius: 5px; margin-bottom: 10px;" alt="${title}"/>` : ''}
+            <h3 style="color: #840132; font-size: 18px; margin: 10px 0;">${title}</h3>
+            <p style="color: #4d4d4d; font-size: 14px; line-height: 1.6;">${text}</p>
+          </div>
+        `;
+      });
+      
+      keepersContent += `</div>`;
+      container.innerHTML += keepersContent;
+    }
+    
+    // Extract Impact section
+    const impactSection = document.querySelector('#impact');
+    if (impactSection) {
+      const sectionTitle = impactSection.querySelector('.section-head h2')?.textContent || 'Impact';
+      const sectionDesc = impactSection.querySelector('.section-head p')?.textContent || '';
+      
+      let impactContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      // Get KPIs
+      const kpis = impactSection.querySelectorAll('.kpi');
+      if (kpis.length > 0) {
+        impactContent += `<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px;">`;
+        kpis.forEach(kpi => {
+          const num = kpi.querySelector('.kpi-num')?.textContent || '';
+          const label = kpi.querySelector('.kpi-label')?.textContent || '';
+          impactContent += `
+            <div style="text-align: center; padding: 15px; background: #fff5f8; border-radius: 8px;">
+              <div style="font-size: 36px; font-weight: 700; color: #840132; margin-bottom: 5px;">${num}</div>
+              <div style="font-size: 13px; color: #4d4d4d;">${label}</div>
+            </div>
+          `;
+        });
+        impactContent += `</div>`;
+      }
+      
+      impactContent += `</div>`;
+      container.innerHTML += impactContent;
+    }
+    
+    // Extract Partners section
+    const partnersSection = document.querySelector('#partners');
+    if (partnersSection) {
+      const sectionTitle = partnersSection.querySelector('.section-head h2')?.textContent || 'Partners and Donors';
+      const sectionDesc = partnersSection.querySelector('.section-head p')?.textContent || '';
+      
+      let partnersContent = `
+        <div class="pdf-section" style="page-break-before: always; margin-bottom: 30px;">
+          <h2 style="color: #840132; font-size: 28px; margin-bottom: 10px; border-bottom: 3px solid #840132; padding-bottom: 10px;">
+            ${sectionTitle}
+          </h2>
+          <p style="color: #4d4d4d; font-size: 14px; margin-bottom: 25px;">${sectionDesc}</p>
+      `;
+      
+      const donors = partnersSection.querySelectorAll('.donor-card');
+      if (donors.length > 0) {
+        partnersContent += `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">`;
+        donors.forEach(donor => {
+          const img = donor.querySelector('img');
+          if (img) {
+            partnersContent += `
+              <div style="text-align: center; padding: 10px; background: #ffffff; border: 1px solid #e6e6e6; border-radius: 8px;">
+                <img src="${img.src}" style="max-width: 100%; height: auto; max-height: 80px; object-fit: contain;" alt="${img.alt}"/>
+              </div>
+            `;
+          }
+        });
+        partnersContent += `</div>`;
+      }
+      
+      partnersContent += `</div>`;
+      container.innerHTML += partnersContent;
+    }
+    
+    // Add footer
+    const footer = `
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e6e6e6; text-align: center;">
+        <p style="color: #808080; font-size: 11px; margin: 5px 0;">
+          Environment and Sustainable Development Unit (ESDU)
+        </p>
+        <p style="color: #808080; font-size: 11px; margin: 5px 0;">
+          American University of Beirut (AUB)
+        </p>
+        <p style="color: #808080; font-size: 11px; margin: 5px 0;">
+          © ${new Date().getFullYear()} ESDU. All rights reserved.
+        </p>
+      </div>
+    `;
+    
+    container.innerHTML += footer;
+    document.body.appendChild(container);
+    
+    return container;
   }
 });
