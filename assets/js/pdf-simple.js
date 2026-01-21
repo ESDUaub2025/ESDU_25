@@ -257,6 +257,34 @@ ready(() => {
         }
       }
       
+      // PROJECTS SECTION
+      const projects = document.querySelector('#projects');
+      if (projects) {
+        const title = getText(projects, 'h2');
+        const subtitle = getText(projects, '.section-head p');
+        const projectList = getTexts(projects, '.donor-card span');
+        
+        if (title && projectList.length) {
+          html += `
+            <div style="page-break-before: always;"></div>
+            <h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>
+          `;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          html += `<ul style="list-style: none; padding: 0; margin: 0;">`;
+          projectList.forEach(project => {
+            html += `
+              <li style="padding: 10px; margin: 8px 0; background: #fffef9; border-left: 4px solid #D4AF37;">
+                ${project}
+              </li>
+            `;
+          });
+          html += `</ul>`;
+        }
+      }
+      
       // FOOTER
       html += `
         <div style="margin-top: 50px; padding-top: 15px; border-top: 2px solid #ccc; text-align: center;">
