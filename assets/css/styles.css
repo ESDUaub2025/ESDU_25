@@ -360,10 +360,13 @@ a:hover { text-decoration: underline; }
 .hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(2rem, 4vw, 3rem) 0;
+  /* Reduced height - was clamp(2rem, 4vw, 3rem), now significantly shorter */
+  padding: clamp(1.5rem, 2.5vw, 2rem) 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Minimum height to ensure content fits but keep it compact */
+  min-height: 50vh;
 }
 
 /* Background Carousel Container */
@@ -374,6 +377,8 @@ a:hover { text-decoration: underline; }
   width: 100%;
   height: 100%;
   z-index: 0;
+  /* Enable parallax scrolling */
+  will-change: transform;
 }
 
 .hero-bg-image {
@@ -387,6 +392,9 @@ a:hover { text-decoration: underline; }
   background-repeat: no-repeat;
   opacity: 0;
   transition: opacity 1.5s ease-in-out;
+  /* Enable parallax scrolling - background moves slower than scroll */
+  will-change: transform;
+  background-attachment: fixed;
 }
 
 .hero-bg-image.active {
@@ -425,36 +433,92 @@ a:hover { text-decoration: underline; }
       rgba(0, 0, 0, 0.4) 100%
     );
   }
+  
+  /* Disable background-attachment fixed on mobile for better performance */
+  .hero-bg-image {
+    background-attachment: scroll;
+  }
 }
 
-/* Content Container - Centered and Above Background */
+/* Content Container - Left Aligned and Above Background */
 .hero-content {
   position: relative;
   z-index: 3;
-  text-align: center;
-  padding: clamp(1.5rem, 3vw, 2.5rem) 0;
-  max-width: 900px;
-  width: 92%;
-  margin: 0 auto;
+  text-align: left;
+  /* Reduced padding for shorter section */
+  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  max-width: 100%;
+  width: 100%;
+  /* Override container centering */
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  padding-left: 4%;
+  /* Enable parallax scrolling for text content */
+  will-change: transform;
 }
 
-/* Main Titles - White with Shadow for Readability */
+/* Hero Text Carousel Container */
+.hero-text-carousel {
+  position: relative;
+  width: 100%;
+  min-height: clamp(120px, 15vh, 180px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Hero Text Slides */
+.hero-text-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+  pointer-events: none;
+}
+
+.hero-text-slide.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;
+}
+
+/* Main Titles - White with Shadow for Readability - Now Bold by Default */
 .hero-main-title {
   font-family: "Montserrat", "proxima-nova", "Proxima Nova", -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: clamp(1.3rem, 2.8vw, 2.2rem);
-  font-weight: 700;
+  font-weight: 700; /* Already bold */
   color: #ffffff;
-  text-align: center;
-  margin: 0 auto clamp(0.5rem, 1.5vw, 1rem);
+  text-align: left;
+  margin: 0 0 clamp(0.5rem, 1.5vw, 1rem) 0;
   max-width: 100%;
   line-height: 1.3;
-  padding: 0 1rem;
+  padding: 0;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+/* Animated text styling */
+.hero-animated {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero-text-slide.active .hero-animated:first-child {
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+.hero-text-slide.active .hero-animated:nth-child(2) {
+  animation-delay: 0.5s;
+  opacity: 0;
 }
 
 .hero-main-title-second {
   margin-top: 0;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
+  /* Reduced spacing for shorter section */
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
 /* ESDU Brand Image - Advanced Translucent Layer */
@@ -463,7 +527,8 @@ a:hover { text-decoration: underline; }
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: clamp(1rem, 2vw, 2rem) 0;
+  /* Reduced padding for shorter section */
+  padding: clamp(0.5rem, 1.5vw, 1rem) 0;
 }
 
 .hero-esdu-image {
@@ -663,7 +728,9 @@ a:hover { text-decoration: underline; }
   }
   
   .hero {
-    padding: 2rem 0;
+    /* Reduced height for tablets */
+    padding: 1.5rem 0;
+    min-height: 45vh;
   }
   
   .hero-content {
@@ -689,7 +756,9 @@ a:hover { text-decoration: underline; }
   }
   
   .hero {
-    padding: 1.5rem 0;
+    /* Shorter hero on mobile */
+    padding: 1rem 0;
+    min-height: 40vh;
   }
   
   .hero-main-title {

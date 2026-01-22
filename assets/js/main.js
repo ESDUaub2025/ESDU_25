@@ -1122,21 +1122,27 @@ ready(() => {
 ready(() => {
 
 
-  // Hero Background Carousel - Smooth transitions
+  // Hero Background Carousel - Smooth transitions with Text Sync
   const heroBackgroundCarousel = document.querySelector('.hero-background-carousel');
+  const heroTextCarousel = document.querySelector('.hero-text-carousel');
+  
   if (heroBackgroundCarousel) {
     const bgImages = Array.from(heroBackgroundCarousel.querySelectorAll('.hero-bg-image'));
+    const textSlides = heroTextCarousel ? Array.from(heroTextCarousel.querySelectorAll('.hero-text-slide')) : [];
     
     if (bgImages.length <= 1) {
       // Single image, just ensure it's active
       if (bgImages.length === 1) {
         bgImages[0].classList.add('active');
       }
+      if (textSlides.length === 1) {
+        textSlides[0].classList.add('active');
+      }
     } else {
       // Multiple images - set up carousel
       let currentIndex = 0;
       
-      // Ensure first image is active
+      // Ensure first image and text are active
       bgImages.forEach((img, index) => {
         if (index === 0) {
           img.classList.add('active');
@@ -1145,12 +1151,36 @@ ready(() => {
         }
       });
       
+      if (textSlides.length > 0) {
+        textSlides.forEach((slide, index) => {
+          if (index === 0) {
+            slide.classList.add('active');
+          } else {
+            slide.classList.remove('active');
+          }
+        });
+      }
+      
       function transitionToNext() {
         const currentImg = bgImages[currentIndex];
         const nextIndex = (currentIndex + 1) % bgImages.length;
         const nextImg = bgImages[nextIndex];
         
-        // Fade out current
+        // Sync text transition
+        if (textSlides.length > 0) {
+          const currentText = textSlides[currentIndex % textSlides.length];
+          const nextText = textSlides[nextIndex % textSlides.length];
+          
+          // Fade out current text
+          currentText.classList.remove('active');
+          
+          // Fade in next text with slight delay
+          setTimeout(() => {
+            nextText.classList.add('active');
+          }, 500);
+        }
+        
+        // Fade out current image
         currentImg.style.opacity = '0';
         
         // After fade out, switch active state
@@ -1176,6 +1206,47 @@ ready(() => {
       // Auto-rotate every 6 seconds
       setInterval(transitionToNext, 6000);
     }
+  }
+
+  // Parallax Scrolling Effect for Hero Section
+  const hero = document.querySelector('.hero');
+  const heroBackgroundCarousel2 = document.querySelector('.hero-background-carousel');
+  const heroContent = document.querySelector('.hero-content');
+  
+  if (hero && heroBackgroundCarousel2 && heroContent) {
+    let ticking = false;
+    
+    function updateParallax() {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const heroTop = hero.offsetTop;
+      const heroHeight = hero.offsetHeight;
+      
+      // Only apply parallax when hero is in viewport
+      if (scrollY < heroTop + heroHeight) {
+        // Background moves slower (40% of scroll speed) - creates depth
+        const bgOffset = (scrollY - heroTop) * 0.4;
+        heroBackgroundCarousel2.style.transform = `translate3d(0, ${bgOffset}px, 0)`;
+        
+        // Content moves slightly slower (20% of scroll speed) - subtle effect
+        const contentOffset = (scrollY - heroTop) * 0.2;
+        heroContent.style.transform = `translate3d(0, ${contentOffset}px, 0)`;
+      }
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+    
+    // Use passive listener for better performance
+    window.addEventListener('scroll', requestTick, { passive: true });
+    
+    // Initial update
+    updateParallax();
   }
 });
 
