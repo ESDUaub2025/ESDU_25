@@ -366,7 +366,7 @@ a:hover { text-decoration: underline; }
   align-items: center;
   justify-content: center;
   /* Minimum height to ensure content fits but keep it compact */
-  min-height: 50vh;
+  min-height: 40vh;
 }
 
 /* Background Carousel Container */
@@ -730,7 +730,7 @@ a:hover { text-decoration: underline; }
   .hero {
     /* Reduced height for tablets */
     padding: 1.5rem 0;
-    min-height: 45vh;
+    min-height: 35vh;
   }
   
   .hero-content {
@@ -758,7 +758,7 @@ a:hover { text-decoration: underline; }
   .hero {
     /* Shorter hero on mobile */
     padding: 1rem 0;
-    min-height: 40vh;
+    min-height: 30vh;
   }
   
   .hero-main-title {
