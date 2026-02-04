@@ -451,8 +451,17 @@ ready(() => {
       console.log('=== Content extraction complete ===');
       console.log('HTML length:', html.length);
       
+      if (html.length < 1000) {
+        console.error('ERROR: HTML content too short!', html);
+        alert('PDF generation failed: Not enough content extracted. Check console for details.');
+        pdfBtn.innerHTML = originalHTML;
+        pdfBtn.disabled = false;
+        return;
+      }
+      
       // Create temp container
       const container = document.createElement('div');
+      container.id = 'pdf-temp-container';
       container.style.cssText = `
         position: absolute;
         left: -9999px;
@@ -468,38 +477,50 @@ ready(() => {
       container.innerHTML = html;
       document.body.appendChild(container);
       
-      console.log('Container added to DOM, generating PDF...');
+      console.log('Container added to DOM');
+      console.log('Container children count:', container.children.length);
+      console.log('Container text length:', container.textContent.length);
       
-      // PDF generation options
+      // Wait for DOM to settle
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      console.log('Starting PDF generation...');
+      
+      // PDF generation options - simplified for debugging
       const options = {
-        margin: 15,
+        margin: 10,
         filename: filename,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { 
+          type: 'jpeg', 
+          quality: 0.95 
+        },
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          logging: false,
-          letterRendering: true,
-          allowTaint: false,
-          removeContainer: true
+          logging: true,
+          letterRendering: true
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait',
-          compress: true
+          orientation: 'portrait'
         },
         pagebreak: { 
-          mode: ['css', 'legacy'],
-          avoid: ['tr', 'td']
-        },
-        enableLinks: true
+          mode: ['avoid-all', 'css', 'legacy']
+        }
       };
       
-      // Generate PDF
-      await html2pdf().set(options).from(container).save();
+      console.log('Calling html2pdf with options:', options);
       
-      console.log('=== PDF GENERATION COMPLETE ===');
+      // Generate PDF with better error handling
+      try {
+        await html2pdf().set(options).from(container).save();
+        console.log('=== PDF GENERATION COMPLETE ===');
+      } catch (pdfError) {
+        console.error('html2pdf error:', pdfError);
+        alert('PDF generation failed at rendering stage. Check console.');
+        throw pdfError;
+      }
       
       // Cleanup
       if (container && container.parentNode) {
@@ -514,9 +535,20 @@ ready(() => {
       
     } catch (error) {
       console.error('PDF generation failed:', error);
-      alert('Failed to generate PDF. Please try again or contact support.');
+      console.error('Error stack:', error.stack);
+      
+      // Show detailed error
+      const errorMsg = `PDF Generation Error:\n${error.message}\n\nCheck browser console for details.`;
+      alert(errorMsg);
+      
       pdfBtn.innerHTML = originalHTML;
       pdfBtn.disabled = false;
+      
+      // Try to remove container if it exists
+      const container = document.querySelector('#pdf-temp-container');
+      if (container && container.parentNode) {
+        document.body.removeChild(container);
+      }
     }
   });
 });
