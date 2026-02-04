@@ -166,17 +166,17 @@ ready(() => {
       // MISSION SECTION
       const mission = document.querySelector('#mission');
       if (mission) {
-        const title = getText(mission, 'h2');
+        const title = safeGetText(mission, 'h2');
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 25px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
           
           const cards = mission.querySelectorAll('.card');
           cards.forEach(card => {
-            const h3 = getText(card, 'h3');
-            const p = getText(card, 'p');
+            const h3 = safeGetText(card, 'h3');
+            const p = safeGetText(card, 'p');
             
             if (h3 === 'Core Values') {
-              const values = getTexts(card, 'li');
+              const values = safeGetTexts(card, 'li');
               if (values.length) {
                 html += `
                   <div style="margin: 20px 0; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
@@ -204,8 +204,8 @@ ready(() => {
       // WORK SECTION
       const work = document.querySelector('#work');
       if (work) {
-        const title = getText(work, 'h2');
-        const subtitle = getText(work, '.section-head p');
+        const title = safeGetText(work, 'h2');
+        const subtitle = safeGetText(work, '.section-head p');
         
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
@@ -215,8 +215,8 @@ ready(() => {
           
           const slides = work.querySelectorAll('.slide');
           slides.forEach(slide => {
-            const h3 = getText(slide, 'h3');
-            const p = getText(slide, 'p');
+            const h3 = safeGetText(slide, 'h3');
+            const p = safeGetText(slide, 'p');
             if (h3 && p) {
               html += `
                 <div style="margin: 15px 0; padding: 12px; background: #fffef9; border-left: 4px solid #D4AF37;">
@@ -234,8 +234,8 @@ ready(() => {
       // GOALS SECTION
       const goals = document.querySelector('#goals');
       if (goals) {
-        const title = getText(goals, 'h2');
-        const subtitle = getText(goals, '.section-head p');
+        const title = safeGetText(goals, 'h2');
+        const subtitle = safeGetText(goals, '.section-head p');
         
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
@@ -243,10 +243,10 @@ ready(() => {
             html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
           }
           
-          const goalCards = goals.querySelectorAll('.goal-card');
-          goalCards.forEach(card => {
-            const h3 = getText(card, 'h3');
-            const p = getText(card, 'p');
+          const cards = goals.querySelectorAll('.goal-card');
+          cards.forEach(card => {
+            const h3 = safeGetText(card, 'h3');
+            const p = safeGetText(card, 'p');
             if (h3 && p) {
               html += `
                 <div style="margin: 15px 0; padding: 14px; background: #fffef9; border-left: 4px solid #840132;">
@@ -264,9 +264,9 @@ ready(() => {
       // KEEPERS SECTION (with clickable link)
       const keepers = document.querySelector('#keepers');
       if (keepers) {
-        const title = getText(keepers, 'h2');
-        const paragraphs = getTexts(keepers, '.kotl-card p');
-        const topics = getTexts(keepers, '.chip-list li span');
+        const title = safeGetText(keepers, 'h2');
+        const paragraphs = safeGetTexts(keepers, '.kotl-card p');
+        const topics = safeGetTexts(keepers, '.chip-list li span');
         const keepersLink = keepers.querySelector('.kotl-card a.btn');
         const keepersUrl = keepersLink ? keepersLink.getAttribute('href') : null;
         
@@ -302,8 +302,8 @@ ready(() => {
       // IMPACT SECTION
       const impact = document.querySelector('#impact');
       if (impact) {
-        const title = getText(impact, 'h2');
-        const subtitle = getText(impact, '.section-head p');
+        const title = safeGetText(impact, 'h2');
+        const subtitle = safeGetText(impact, '.section-head p');
         
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
@@ -318,7 +318,7 @@ ready(() => {
               // Get the data-count attribute value instead of text content
               const valueEl = kpi.querySelector('.kpi-value');
               const num = valueEl ? valueEl.getAttribute('data-count') || valueEl.textContent.trim() : '';
-              const label = getText(kpi, '.kpi-label');
+              const label = safeGetText(kpi, '.kpi-label');
               
               if (num && label) {
                 if (i % 2 === 0) html += `<tr>`;
@@ -335,7 +335,7 @@ ready(() => {
           }
           
           // Geographical Outreach section
-          const outreachHead = getText(impact, '.outreach-head h3');
+          const outreachHead = safeGetText(impact, '.outreach-head h3');
           if (outreachHead) {
             html += `
               <div style="margin: 25px 0; padding: 15px; background: #f5f5f5; border-left: 4px solid #D4AF37;">
@@ -352,8 +352,8 @@ ready(() => {
       // PARTNERS SECTION (with clickable donor links if available)
       const partners = document.querySelector('#partners');
       if (partners) {
-        const title = getText(partners, 'h2');
-        const subtitle = getText(partners, '.section-head p');
+        const title = safeGetText(partners, 'h2');
+        const subtitle = safeGetText(partners, '.section-head p');
         
         // Extract donor cards - some may have links
         const donorCards = partners.querySelectorAll('.donor-card');
@@ -402,8 +402,8 @@ ready(() => {
       // PROJECTS SECTION (with clickable URLs)
       const projects = document.querySelector('#projects');
       if (projects) {
-        const title = getText(projects, 'h2');
-        const subtitle = getText(projects, '.section-head p');
+        const title = safeGetText(projects, 'h2');
+        const subtitle = safeGetText(projects, '.section-head p');
         
         // Extract project cards with their links
         const projectCards = projects.querySelectorAll('.donor-card');
