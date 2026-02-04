@@ -83,26 +83,28 @@ ready(() => {
       const foreword = document.querySelector('#foreword');
       if (foreword) {
         const title = getText(foreword, 'h2');
-        const quote = getText(foreword, '.foreword-text');
+        const bodyParas = getTexts(foreword, '.foreword-body p');
         const author = getText(foreword, '.author-name');
         const authorTitle = getText(foreword, '.author-title');
+        const authorOrg = getText(foreword, '.author-org');
+        
+        console.log('Foreword found:', {title, paras: bodyParas.length, author});
         
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
           
-          if (quote) {
-            html += `
-              <div style="padding: 20px; margin: 20px 0; background: #fff5f8; border-left: 4px solid #840132; font-style: italic;">
-                <p style="margin: 0; font-size: 11pt; line-height: 1.8;">${esc(quote)}</p>
-              </div>
-            `;
+          if (bodyParas.length > 0) {
+            bodyParas.forEach(para => {
+              html += `<p style="margin: 0 0 12px; text-align: justify; line-height: 1.6;">${esc(para)}</p>`;
+            });
           }
           
           if (author) {
             html += `
-              <div style="margin: 20px 0 0; text-align: right;">
+              <div style="margin: 30px 0 0; text-align: right; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
                 <p style="margin: 5px 0; font-weight: 700; color: #840132; font-size: 11pt;">${esc(author)}</p>
-                ${authorTitle ? `<p style="margin: 5px 0; color: #666; font-size: 9pt;">${esc(authorTitle)}</p>` : ''}
+                ${authorTitle ? `<p style="margin: 5px 0; color: #666; font-size: 10pt;">${esc(authorTitle)}</p>` : ''}
+                ${authorOrg ? `<p style="margin: 5px 0; color: #666; font-size: 10pt;">${esc(authorOrg)}</p>` : ''}
               </div>
             `;
           }
@@ -119,14 +121,19 @@ ready(() => {
       if (mission) {
         const title = getText(mission, 'h2');
         
+        console.log('Mission found:', {title});
+        
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
           
-          // Get cards
-          const cards = mission.querySelectorAll('.mvv-card');
-          cards.forEach(card => {
+          // Get Mission and Vision cards from card-slider
+          const cards = mission.querySelectorAll('.card-slider .card');
+          console.log('Mission cards found:', cards.length);
+          cards.forEach((card, idx) => {
             const cardTitle = getText(card, 'h3');
             const cardText = getText(card, 'p');
+            
+            console.log(`Card ${idx}:`, {cardTitle, hasText: !!cardText});
             
             if (cardTitle) {
               html += `
@@ -138,8 +145,9 @@ ready(() => {
             }
           });
           
-          // Core Values
-          const values = getTexts(mission, '.core-values li');
+          // Core Values - these are in .pill-list
+          const values = getTexts(mission, '.pill-list li');
+          console.log('Core values found:', values.length);
           if (values.length > 0) {
             html += `
               <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5a27;">
@@ -165,16 +173,21 @@ ready(() => {
         const title = getText(work, 'h2');
         const subtitle = getText(work, '.section-head p');
         
+        console.log('Work found:', {title});
+        
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
           if (subtitle) {
             html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
           }
           
-          const slides = work.querySelectorAll('.work-slide');
-          slides.forEach(slide => {
+          const slides = work.querySelectorAll('.slide');
+          console.log('Work slides found:', slides.length);
+          slides.forEach((slide, idx) => {
             const slideTitle = getText(slide, 'h3');
             const slideText = getText(slide, 'p');
+            
+            console.log(`Slide ${idx}:`, {slideTitle, hasText: !!slideText});
             
             if (slideTitle) {
               html += `
@@ -198,6 +211,8 @@ ready(() => {
       if (goals) {
         const title = getText(goals, 'h2');
         const subtitle = getText(goals, '.section-head p');
+        
+        console.log('Goals found:', {title});
         
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
@@ -237,9 +252,11 @@ ready(() => {
       if (keepers) {
         const title = getText(keepers, 'h2');
         const paras = getTexts(keepers, '.kotl-card p');
-        const topics = getTexts(keepers, '.topics-preview .topic-tag');
+        const topics = getTexts(keepers, '.chip-list span');
         const link = keepers.querySelector('.kotl-card a.btn');
         const url = link ? link.getAttribute('href') : null;
+        
+        console.log('Keepers found:', {title, paras: paras.length, topics: topics.length, hasUrl: !!url});
         
         if (title && paras.length > 0) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
@@ -278,6 +295,8 @@ ready(() => {
         const title = getText(impact, 'h2');
         const subtitle = getText(impact, '.section-head p');
         
+        console.log('Impact found:', {title});
+        
         if (title) {
           html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
           if (subtitle) {
@@ -286,6 +305,7 @@ ready(() => {
           
           // KPIs - use data-count attribute for values
           const kpis = impact.querySelectorAll('.kpi');
+          console.log('KPIs found:', kpis.length);
           if (kpis.length > 0) {
             html += `<div style="display: table; width: 100%; border-collapse: collapse; margin: 20px 0;">`;
             
@@ -336,6 +356,7 @@ ready(() => {
         const subtitle = getText(partners, '.section-head p');
         
         const cards = partners.querySelectorAll('.donor-card');
+        console.log('Partner cards found:', cards.length);
         const donors = [];
         cards.forEach(card => {
           const link = card.querySelector('a');
@@ -385,6 +406,7 @@ ready(() => {
         const subtitle = getText(projects, '.section-head p');
         
         const cards = projects.querySelectorAll('.donor-card');
+        console.log('Project cards found:', cards.length);
         const projectList = [];
         cards.forEach(card => {
           const link = card.querySelector('a');
