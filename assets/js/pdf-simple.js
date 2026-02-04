@@ -1,465 +1,90 @@
-// ESDU Portfolio PDF Generator - ROBUST VERSION
-// Generates a comprehensive PDF with all content and clickable links
-
+// ESDU Portfolio PDF Generator - Robust Cross-Browser Implementation
 ready(() => {
   const pdfBtn = document.getElementById('download-pdf-btn');
   
-  if (!pdfBtn) {
-    console.warn('PDF download button not found');
-    return;
-  }
+  if (!pdfBtn) return;
   
   pdfBtn.addEventListener('click', async function(e) {
     e.preventDefault();
     
-    // Library check
+    // Comprehensive browser and library check
     if (typeof html2pdf === 'undefined') {
       alert('PDF library not loaded. Please refresh the page and try again.');
       return;
     }
     
     const originalHTML = pdfBtn.innerHTML;
+    const originalDisabled = pdfBtn.disabled;
+    
     pdfBtn.innerHTML = '<span>⏳ Generating PDF...</span>';
     pdfBtn.disabled = true;
     
+    // Add delay to ensure UI updates
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     try {
-      // Generate filename with date
-      const dateStr = new Date().toISOString().split('T')[0];
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
       const filename = `ESDU_Portfolio_${dateStr}.pdf`;
       
-      console.log('=== STARTING PDF GENERATION ===');
+      console.log('Starting PDF generation...');
       
-      // Helper to safely extract text
-      const getText = (parent, selector) => {
+      // CRITICAL: Scroll through entire page to trigger all lazy-loaded content
+      // and IntersectionObserver callbacks
+      console.log('Revealing all content by scrolling...');
+      const originalScrollPos = window.pageYOffset;
+      
+      // Scroll to bottom to trigger all IntersectionObservers
+      window.scrollTo(0, document.body.scrollHeight);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Scroll back to top
+      window.scrollTo(0, 0);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Scroll to middle
+      window.scrollTo(0, document.body.scrollHeight / 2);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Restore original position
+      window.scrollTo(0, originalScrollPos);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      console.log('All content should now be visible');
+      
+      // Helper functions for safe content extraction
+      const safeGetText = (element, selector) => {
+        if (!element) return '';
         try {
-          const el = selector ? parent.querySelector(selector) : parent;
-          if (!el) return '';
-          return el.textContent.trim().replace(/\s+/g, ' ');
+          const el = element.querySelector(selector);
+          return el ? el.textContent.trim().replace(/\s+/g, ' ') : '';
         } catch (e) {
+          console.warn('Error extracting text:', selector, e);
           return '';
         }
       };
       
-      // Helper to safely extract multiple elements
-      const getTexts = (parent, selector) => {
+      const safeGetTexts = (element, selector) => {
+        if (!element) return [];
         try {
-          const elements = parent.querySelectorAll(selector);
-          return Array.from(elements).map(el => el.textContent.trim()).filter(Boolean);
+          return Array.from(element.querySelectorAll(selector) || [])
+            .map(el => el.textContent.trim().replace(/\s+/g, ' '))
+            .filter(t => t && t.length > 0);
         } catch (e) {
+          console.warn('Error extracting texts:', selector, e);
           return [];
         }
       };
       
-      // Escape HTML for safety
-      const esc = (text) => {
+      const escapeHtml = (text) => {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
       };
       
-      // Build PDF HTML content
-      let html = '';
+      console.log('Starting content extraction...');
       
-      // ====================
-      // COVER PAGE
-      // ====================
-      console.log('Building cover page...');
-      html += `
-        <div style="text-align: center; padding: 100px 20px;">
-          <h1 style="font-size: 32pt; color: #840132; margin: 0 0 20px; font-weight: 700;">ESDU Portfolio</h1>
-          <div style="width: 100px; height: 4px; background: #840132; margin: 0 auto 30px;"></div>
-          <p style="font-size: 18pt; color: #666; margin: 0 0 80px;">25 Years of Sustainable Development</p>
-          <p style="font-size: 12pt; color: #888; margin: 10px 0;">Environment and Sustainable Development Unit</p>
-          <p style="font-size: 12pt; color: #888; margin: 10px 0;">American University of Beirut</p>
-          <p style="font-size: 10pt; color: #999; margin-top: 60px;">${new Date().getFullYear()}</p>
-        </div>
-        <div style="page-break-after: always;"></div>
-      `;
-      
-      // ====================
-      // FOREWORD
-      // ====================
-      console.log('Extracting foreword...');
-      const foreword = document.querySelector('#foreword');
-      if (foreword) {
-        const title = getText(foreword, 'h2');
-        const bodyParas = getTexts(foreword, '.foreword-body p');
-        const author = getText(foreword, '.author-name');
-        const authorTitle = getText(foreword, '.author-title');
-        const authorOrg = getText(foreword, '.author-org');
-        
-        console.log('Foreword found:', {title, paras: bodyParas.length, author});
-        
-        if (title) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          
-          if (bodyParas.length > 0) {
-            bodyParas.forEach(para => {
-              html += `<p style="margin: 0 0 12px; text-align: justify; line-height: 1.6;">${esc(para)}</p>`;
-            });
-          }
-          
-          if (author) {
-            html += `
-              <div style="margin: 30px 0 0; text-align: right; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
-                <p style="margin: 5px 0; font-weight: 700; color: #840132; font-size: 11pt;">${esc(author)}</p>
-                ${authorTitle ? `<p style="margin: 5px 0; color: #666; font-size: 10pt;">${esc(authorTitle)}</p>` : ''}
-                ${authorOrg ? `<p style="margin: 5px 0; color: #666; font-size: 10pt;">${esc(authorOrg)}</p>` : ''}
-              </div>
-            `;
-          }
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // MISSION, VISION & VALUES
-      // ====================
-      console.log('Extracting mission...');
-      const mission = document.querySelector('#mission');
-      if (mission) {
-        const title = getText(mission, 'h2');
-        
-        console.log('Mission found:', {title});
-        
-        if (title) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          
-          // Get Mission and Vision cards from card-slider
-          const cards = mission.querySelectorAll('.card-slider .card');
-          console.log('Mission cards found:', cards.length);
-          cards.forEach((card, idx) => {
-            const cardTitle = getText(card, 'h3');
-            const cardText = getText(card, 'p');
-            
-            console.log(`Card ${idx}:`, {cardTitle, hasText: !!cardText});
-            
-            if (cardTitle) {
-              html += `
-                <div style="margin: 20px 0; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
-                  <h3 style="color: #840132; font-size: 14pt; margin: 0 0 10px; font-weight: 600;">${esc(cardTitle)}</h3>
-                  ${cardText ? `<p style="margin: 0; line-height: 1.6;">${esc(cardText)}</p>` : ''}
-                </div>
-              `;
-            }
-          });
-          
-          // Core Values - these are in .pill-list
-          const values = getTexts(mission, '.pill-list li');
-          console.log('Core values found:', values.length);
-          if (values.length > 0) {
-            html += `
-              <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5a27;">
-                <h3 style="color: #2d5a27; font-size: 13pt; margin: 0 0 10px; font-weight: 600;">Core Values</h3>
-                <ul style="margin: 0; padding-left: 20px;">
-            `;
-            values.forEach(val => {
-              html += `<li style="margin: 5px 0;">${esc(val)}</li>`;
-            });
-            html += `</ul></div>`;
-          }
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // ESDU AT WORK
-      // ====================
-      console.log('Extracting work section...');
-      const work = document.querySelector('#work');
-      if (work) {
-        const title = getText(work, 'h2');
-        const subtitle = getText(work, '.section-head p');
-        
-        console.log('Work found:', {title});
-        
-        if (title) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          if (subtitle) {
-            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
-          }
-          
-          const slides = work.querySelectorAll('.slide');
-          console.log('Work slides found:', slides.length);
-          slides.forEach((slide, idx) => {
-            const slideTitle = getText(slide, 'h3');
-            const slideText = getText(slide, 'p');
-            
-            console.log(`Slide ${idx}:`, {slideTitle, hasText: !!slideText});
-            
-            if (slideTitle) {
-              html += `
-                <div style="margin: 20px 0; padding: 15px; background: #fffef9; border-left: 4px solid #D4AF37;">
-                  <h3 style="color: #840132; font-size: 13pt; margin: 0 0 8px; font-weight: 600;">${esc(slideTitle)}</h3>
-                  ${slideText ? `<p style="margin: 0;">${esc(slideText)}</p>` : ''}
-                </div>
-              `;
-            }
-          });
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // STRATEGIC GOALS
-      // ====================
-      console.log('Extracting goals...');
-      const goals = document.querySelector('#goals');
-      if (goals) {
-        const title = getText(goals, 'h2');
-        const subtitle = getText(goals, '.section-head p');
-        
-        console.log('Goals found:', {title});
-        
-        if (title) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          if (subtitle) {
-            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
-          }
-          
-          const goalCards = goals.querySelectorAll('.goal-card');
-          goalCards.forEach((card, i) => {
-            const goalTitle = getText(card, 'h3');
-            const goalText = getText(card, 'p');
-            
-            if (goalTitle) {
-              const bgColors = ['#fff5f8', '#f0f8f0', '#fffef9'];
-              const borders = ['#840132', '#2d5a27', '#D4AF37'];
-              const bg = bgColors[i % 3];
-              const border = borders[i % 3];
-              
-              html += `
-                <div style="margin: 15px 0; padding: 15px; background: ${bg}; border-left: 4px solid ${border};">
-                  <h3 style="color: #840132; font-size: 12pt; margin: 0 0 8px; font-weight: 600;">${esc(goalTitle)}</h3>
-                  ${goalText ? `<p style="margin: 0; font-size: 10pt;">${esc(goalText)}</p>` : ''}
-                </div>
-              `;
-            }
-          });
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // KEEPERS OF THE LAND
-      // ====================
-      console.log('Extracting keepers...');
-      const keepers = document.querySelector('#keepers');
-      if (keepers) {
-        const title = getText(keepers, 'h2');
-        const paras = getTexts(keepers, '.kotl-card p');
-        const topics = getTexts(keepers, '.chip-list span');
-        const link = keepers.querySelector('.kotl-card a.btn');
-        const url = link ? link.getAttribute('href') : null;
-        
-        console.log('Keepers found:', {title, paras: paras.length, topics: topics.length, hasUrl: !!url});
-        
-        if (title && paras.length > 0) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          
-          paras.forEach(p => {
-            html += `<p style="margin: 0 0 12px; text-align: justify;">${esc(p)}</p>`;
-          });
-          
-          if (url) {
-            html += `
-              <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5a27; text-align: center;">
-                <a href="${url}" style="display: inline-block; padding: 12px 24px; background: #840132; color: white; text-decoration: none; font-weight: 600; border-radius: 4px;">Explore the Initiative Online →</a>
-              </div>
-            `;
-          }
-          
-          if (topics.length > 0) {
-            html += `
-              <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5a27;">
-                <h3 style="color: #2d5a27; font-size: 13pt; margin: 0 0 10px; font-weight: 600;">Key Topics</h3>
-                <p style="margin: 0;">${topics.map(t => esc(t)).join(' • ')}</p>
-              </div>
-            `;
-          }
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // IMPACT & OUTREACH
-      // ====================
-      console.log('Extracting impact...');
-      const impact = document.querySelector('#impact');
-      if (impact) {
-        const title = getText(impact, 'h2');
-        const subtitle = getText(impact, '.section-head p');
-        
-        console.log('Impact found:', {title});
-        
-        if (title) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          if (subtitle) {
-            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
-          }
-          
-          // KPIs - use data-count attribute for values
-          const kpis = impact.querySelectorAll('.kpi');
-          console.log('KPIs found:', kpis.length);
-          if (kpis.length > 0) {
-            html += `<div style="display: table; width: 100%; border-collapse: collapse; margin: 20px 0;">`;
-            
-            kpis.forEach((kpi, i) => {
-              const valueEl = kpi.querySelector('.kpi-value');
-              const value = valueEl ? (valueEl.getAttribute('data-count') || valueEl.textContent.trim()) : '';
-              const label = getText(kpi, '.kpi-label');
-              
-              if (value && label) {
-                if (i % 2 === 0) html += `<div style="display: table-row;">`;
-                
-                html += `
-                  <div style="display: table-cell; width: 50%; padding: 20px; text-align: center; background: #fff5f8; border: 2px solid #840132;">
-                    <div style="font-size: 32pt; font-weight: 700; color: #840132; margin-bottom: 5px;">${esc(value)}</div>
-                    <div style="font-size: 10pt; color: #555;">${esc(label)}</div>
-                  </div>
-                `;
-                
-                if (i % 2 === 1 || i === kpis.length - 1) html += `</div>`;
-              }
-            });
-            
-            html += `</div>`;
-          }
-          
-          // Geographical reach
-          const outreachHead = getText(impact, '.outreach-head h3');
-          if (outreachHead) {
-            html += `
-              <div style="margin: 25px 0; padding: 15px; background: #f5f5f5; border-left: 4px solid #D4AF37;">
-                <h3 style="color: #840132; font-size: 14pt; margin: 0 0 8px; font-weight: 600;">${esc(outreachHead)}</h3>
-                <p style="margin: 0; color: #666;">ESDU's work spans local, regional, and global scales - from Lebanese communities to international partnerships across multiple continents.</p>
-              </div>
-            `;
-          }
-          
-          html += `<div style="page-break-after: always;"></div>`;
-        }
-      }
-      
-      // ====================
-      // PARTNERS & DONORS
-      // ====================
-      console.log('Extracting partners...');
-      const partners = document.querySelector('#partners');
-      if (partners) {
-        const title = getText(partners, 'h2');
-        const subtitle = getText(partners, '.section-head p');
-        
-        const cards = partners.querySelectorAll('.donor-card');
-        console.log('Partner cards found:', cards.length);
-        const donors = [];
-        cards.forEach(card => {
-          const link = card.querySelector('a');
-          if (link) {
-            donors.push({ text: link.textContent.trim(), url: link.getAttribute('href') });
-          } else {
-            const span = card.querySelector('span');
-            if (span) {
-              donors.push({ text: span.textContent.trim(), url: null });
-            }
-          }
-        });
-        
-        if (title && donors.length > 0) {
-          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>`;
-          if (subtitle) {
-            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
-          }
-          
-          html += `<div style="margin: 20px 0;">`;
-          donors.forEach(donor => {
-            if (donor.url) {
-              html += `
-                <div style="padding: 10px; margin: 8px 0; background: #fff5f8; border-left: 4px solid #840132;">
-                  <a href="${donor.url}" style="color: #840132; text-decoration: none; border-bottom: 1px solid #840132;">${esc(donor.text)}</a>
-                </div>
-              `;
-            } else {
-              html += `
-                <div style="padding: 10px; margin: 8px 0; background: #fff5f8; border-left: 4px solid #840132;">
-                  ${esc(donor.text)}
-                </div>
-              `;
-            }
-          });
-          html += `</div>`;
-        }
-      }
-      
-      // ====================
-      // PROJECTS
-      // ====================
-      console.log('Extracting projects...');
-      const projects = document.querySelector('#projects');
-      if (projects) {
-        const title = getText(projects, 'h2');
-        const subtitle = getText(projects, '.section-head p');
-        
-        const cards = projects.querySelectorAll('.donor-card');
-        console.log('Project cards found:', cards.length);
-        const projectList = [];
-        cards.forEach(card => {
-          const link = card.querySelector('a');
-          if (link) {
-            projectList.push({ text: link.textContent.trim(), url: link.getAttribute('href') });
-          }
-        });
-        
-        if (title && projectList.length > 0) {
-          html += `
-            <div style="page-break-before: always;"></div>
-            <h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${esc(title)}</h2>
-          `;
-          if (subtitle) {
-            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${esc(subtitle)}</p>`;
-          }
-          
-          html += `<div style="margin: 20px 0;">`;
-          projectList.forEach(proj => {
-            html += `
-              <div style="padding: 10px; margin: 8px 0; background: #fffef9; border-left: 4px solid #D4AF37;">
-                <a href="${proj.url}" style="color: #840132; text-decoration: none; border-bottom: 1px solid #840132;">${esc(proj.text)}</a>
-              </div>
-            `;
-          });
-          html += `</div>`;
-          html += `<p style="margin: 15px 0 0; color: #666; font-size: 9pt; font-style: italic;">Note: All project names are clickable links in PDF viewers that support hyperlinks.</p>`;
-        }
-      }
-      
-      // ====================
-      // FOOTER
-      // ====================
-      html += `
-        <div style="margin-top: 50px; padding-top: 15px; border-top: 2px solid #ccc; text-align: center;">
-          <p style="margin: 5px 0; font-weight: 700; color: #840132; font-size: 11pt;">Environment and Sustainable Development Unit (ESDU)</p>
-          <p style="margin: 5px 0; color: #666;">American University of Beirut</p>
-          <p style="margin: 5px 0; color: #999; font-size: 9pt;">© ${new Date().getFullYear()} ESDU. All rights reserved.</p>
-        </div>
-      `;
-      
-      console.log('=== Content extraction complete ===');
-      console.log('HTML length:', html.length);
-      
-      if (html.length < 1000) {
-        console.error('ERROR: HTML content too short!', html);
-        alert('PDF generation failed: Not enough content extracted. Check console for details.');
-        pdfBtn.innerHTML = originalHTML;
-        pdfBtn.disabled = false;
-        return;
-      }
-      
-      // Create temp container
+      // Create PDF content container
       const container = document.createElement('div');
       container.id = 'pdf-temp-container';
       container.style.cssText = `
@@ -468,87 +93,440 @@ ready(() => {
         top: 0;
         width: 210mm;
         background: white;
-        padding: 20px;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 10pt;
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        font-size: 11pt;
         line-height: 1.6;
         color: #333;
+        padding: 0;
+        margin: 0;
       `;
+      
+      // Build HTML content with inline styles
+      let htmlContent = '';
+      
+      // COVER PAGE
+      console.log('Building cover page...');
+      htmlContent += `
+        <div style="text-align: center; padding: 100px 20px 120px; page-break-after: always;">
+          <h1 style="color: #840132; font-size: 36pt; margin: 0 0 20px; font-weight: 700; font-family: Arial, sans-serif;">ESDU Portfolio</h1>
+          <div style="width: 80px; height: 3px; background: #840132; margin: 0 auto 20px;"></div>
+          <h2 style="color: #666; font-size: 20pt; margin: 0 0 80px; font-weight: 400; font-family: Arial, sans-serif;">25 Years of Sustainable Development</h2>
+          <p style="color: #888; font-size: 12pt; margin: 5px 0; font-family: Arial, sans-serif;">Environment and Sustainable Development Unit</p>
+          <p style="color: #888; font-size: 12pt; margin: 5px 0; font-family: Arial, sans-serif;">American University of Beirut</p>
+          <p style="color: #999; font-size: 10pt; margin-top: 40px; font-family: Arial, sans-serif;">${today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+      `;
+      
+      // FOREWORD SECTION
+      console.log('Extracting Foreword...');
+      try {
+        const foreword = document.querySelector('#foreword');
+        if (foreword) {
+          const title = safeGetText(foreword, '.foreword-header h2') || 'Foreword';
+          const subtitle = safeGetText(foreword, '.foreword-subtitle');
+          const paragraphs = safeGetTexts(foreword, '.foreword-body p');
+          const authorName = safeGetText(foreword, '.author-name');
+          const authorTitle = safeGetText(foreword, '.author-title');
+          const authorOrg = safeGetText(foreword, '.author-org');
+          
+          if (paragraphs.length > 0) {
+            htmlContent += `
+              <div style="padding: 20px; page-break-after: always;">
+                <h2 style="color: #840132; font-size: 22pt; margin: 0 0 10px; padding-bottom: 10px; border-bottom: 3px solid #840132; text-align: center; font-family: Arial, sans-serif; font-weight: 700;">${escapeHtml(title)}</h2>
+            `;
+            
+            if (subtitle) {
+              htmlContent += `<p style="text-align: center; color: #666; font-style: italic; margin: 0 0 25px; font-size: 11pt; font-family: Arial, sans-serif;">${escapeHtml(subtitle)}</p>`;
+            }
+            
+            paragraphs.forEach((p, i) => {
+              const isLast = i === paragraphs.length - 1;
+              if (isLast && p.length > 50) {
+                htmlContent += `<p style="margin: 15px 0; text-align: justify; font-style: italic; font-weight: 600; color: #5a0123; border-left: 4px solid #840132; padding-left: 15px; line-height: 1.7; font-family: Arial, sans-serif;">${escapeHtml(p)}</p>`;
+              } else {
+                htmlContent += `<p style="margin: 0 0 12px; text-align: justify; line-height: 1.7; font-family: Arial, sans-serif;">${escapeHtml(p)}</p>`;
+              }
+            });
+            
+            if (authorName) {
+              htmlContent += `
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e6e6e6; text-align: right;">
+                  <p style="margin: 3px 0; font-size: 13pt; font-weight: 700; color: #840132; font-family: Arial, sans-serif;">${escapeHtml(authorName)}</p>
+                  ${authorTitle ? `<p style="margin: 3px 0; font-size: 11pt; font-weight: 600; color: #a0334d; font-family: Arial, sans-serif;">${escapeHtml(authorTitle)}</p>` : ''}
+                  ${authorOrg ? `<p style="margin: 3px 0; font-size: 10pt; color: #808080; font-style: italic; font-family: Arial, sans-serif;">${escapeHtml(authorOrg)}</p>` : ''}
+                </div>
+              `;
+            }
+            
+            htmlContent += `</div>`;
+            console.log('Foreword added successfully');
+          }
+        }
+      } catch (e) {
+        console.error('Error extracting Foreword:', e);
+      }
+      
+      // MISSION SECTION
+      const mission = document.querySelector('#mission');
+      if (mission) {
+        const title = getText(mission, 'h2');
+        if (title) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 25px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          
+          const cards = mission.querySelectorAll('.card');
+          cards.forEach(card => {
+            const h3 = getText(card, 'h3');
+            const p = getText(card, 'p');
+            
+            if (h3 === 'Core Values') {
+              const values = getTexts(card, 'li');
+              if (values.length) {
+                html += `
+                  <div style="margin: 20px 0; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
+                    <h3 style="color: #840132; font-size: 14pt; margin: 0 0 10px; font-weight: 600;">${h3}</h3>
+                    <ul style="margin: 0; padding-left: 20px;">
+                      ${values.map(v => `<li style="margin: 5px 0;">${v}</li>`).join('')}
+                    </ul>
+                  </div>
+                `;
+              }
+            } else if (h3 && p) {
+              html += `
+                <div style="margin: 20px 0; padding: 15px; background: #fff5f8; border-left: 4px solid #840132;">
+                  <h3 style="color: #840132; font-size: 14pt; margin: 0 0 10px; font-weight: 600;">${h3}</h3>
+                  <p style="margin: 0; text-align: justify;">${p}</p>
+                </div>
+              `;
+            }
+          });
+          
+          html += `<div style="page-break-after: always;"></div>`;
+        }
+      }
+      
+      // WORK SECTION
+      const work = document.querySelector('#work');
+      if (work) {
+        const title = getText(work, 'h2');
+        const subtitle = getText(work, '.section-head p');
+        
+        if (title) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          const slides = work.querySelectorAll('.slide');
+          slides.forEach(slide => {
+            const h3 = getText(slide, 'h3');
+            const p = getText(slide, 'p');
+            if (h3 && p) {
+              html += `
+                <div style="margin: 15px 0; padding: 12px; background: #fffef9; border-left: 4px solid #D4AF37;">
+                  <h4 style="color: #840132; font-size: 12pt; margin: 0 0 6px; font-weight: 600;">${h3}</h4>
+                  <p style="margin: 0; font-size: 10pt; text-align: justify;">${p}</p>
+                </div>
+              `;
+            }
+          });
+          
+          html += `<div style="page-break-after: always;"></div>`;
+        }
+      }
+      
+      // GOALS SECTION
+      const goals = document.querySelector('#goals');
+      if (goals) {
+        const title = getText(goals, 'h2');
+        const subtitle = getText(goals, '.section-head p');
+        
+        if (title) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          const goalCards = goals.querySelectorAll('.goal-card');
+          goalCards.forEach(card => {
+            const h3 = getText(card, 'h3');
+            const p = getText(card, 'p');
+            if (h3 && p) {
+              html += `
+                <div style="margin: 15px 0; padding: 14px; background: #fffef9; border-left: 4px solid #840132;">
+                  <h4 style="color: #840132; font-size: 12pt; margin: 0 0 8px; font-weight: 600;">${h3}</h4>
+                  <p style="margin: 0; text-align: justify;">${p}</p>
+                </div>
+              `;
+            }
+          });
+          
+          html += `<div style="page-break-after: always;"></div>`;
+        }
+      }
+      
+      // KEEPERS SECTION (with clickable link)
+      const keepers = document.querySelector('#keepers');
+      if (keepers) {
+        const title = getText(keepers, 'h2');
+        const paragraphs = getTexts(keepers, '.kotl-card p');
+        const topics = getTexts(keepers, '.chip-list li span');
+        const keepersLink = keepers.querySelector('.kotl-card a.btn');
+        const keepersUrl = keepersLink ? keepersLink.getAttribute('href') : null;
+        
+        if (title && paragraphs.length) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          
+          paragraphs.forEach(p => {
+            html += `<p style="margin: 0 0 12px; text-align: justify;">${p}</p>`;
+          });
+          
+          // Add clickable link to explore the initiative
+          if (keepersUrl) {
+            html += `
+              <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5f2d; text-align: center;">
+                <a href="${keepersUrl}" style="display: inline-block; padding: 10px 20px; background: #840132; color: white; text-decoration: none; font-weight: 600; border-radius: 4px;">Explore the Initiative Online →</a>
+              </div>
+            `;
+          }
+          
+          if (topics.length) {
+            html += `
+              <div style="margin: 20px 0; padding: 15px; background: #f0f8f0; border-left: 4px solid #2d5f2d;">
+                <h3 style="color: #2d5f2d; font-size: 13pt; margin: 0 0 10px; font-weight: 600;">Key Topics</h3>
+                <p style="margin: 0;">${topics.join(' • ')}</p>
+              </div>
+            `;
+          }
+          
+          html += `<div style="page-break-after: always;"></div>`;
+        }
+      }
+      
+      // IMPACT SECTION
+      const impact = document.querySelector('#impact');
+      if (impact) {
+        const title = getText(impact, 'h2');
+        const subtitle = getText(impact, '.section-head p');
+        
+        if (title) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          const kpis = impact.querySelectorAll('.kpi');
+          if (kpis.length) {
+            html += `<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">`;
+            kpis.forEach((kpi, i) => {
+              // Get the data-count attribute value instead of text content
+              const valueEl = kpi.querySelector('.kpi-value');
+              const num = valueEl ? valueEl.getAttribute('data-count') || valueEl.textContent.trim() : '';
+              const label = getText(kpi, '.kpi-label');
+              
+              if (num && label) {
+                if (i % 2 === 0) html += `<tr>`;
+                html += `
+                  <td style="width: 50%; padding: 15px; text-align: center; background: #fff5f8; border: 2px solid #840132;">
+                    <div style="font-size: 28pt; font-weight: 700; color: #840132;">${num}</div>
+                    <div style="font-size: 9pt; color: #555; margin-top: 5px;">${label}</div>
+                  </td>
+                `;
+                if (i % 2 === 1 || i === kpis.length - 1) html += `</tr>`;
+              }
+            });
+            html += `</table>`;
+          }
+          
+          // Geographical Outreach section
+          const outreachHead = getText(impact, '.outreach-head h3');
+          if (outreachHead) {
+            html += `
+              <div style="margin: 25px 0; padding: 15px; background: #f5f5f5; border-left: 4px solid #D4AF37;">
+                <h3 style="color: #840132; font-size: 14pt; margin: 0; font-weight: 600;">${outreachHead}</h3>
+                <p style="margin: 8px 0 0; color: #666;">ESDU's work spans local, regional, and global scales - from Lebanese communities to international partnerships across multiple continents.</p>
+              </div>
+            `;
+          }
+          
+          html += `<div style="page-break-after: always;"></div>`;
+        }
+      }
+      
+      // PARTNERS SECTION (with clickable donor links if available)
+      const partners = document.querySelector('#partners');
+      if (partners) {
+        const title = getText(partners, 'h2');
+        const subtitle = getText(partners, '.section-head p');
+        
+        // Extract donor cards - some may have links
+        const donorCards = partners.querySelectorAll('.donor-card');
+        const donorData = Array.from(donorCards).map(card => {
+          const link = card.querySelector('a');
+          if (link) {
+            return {
+              text: link.textContent.trim(),
+              url: link.getAttribute('href')
+            };
+          } else {
+            const span = card.querySelector('span');
+            return {
+              text: span ? span.textContent.trim() : card.textContent.trim(),
+              url: null
+            };
+          }
+        }).filter(d => d.text);
+        
+        if (title && donorData.length) {
+          html += `<h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>`;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          html += `<ul style="list-style: none; padding: 0; margin: 0;">`;
+          donorData.forEach(donor => {
+            if (donor.url) {
+              html += `
+                <li style="padding: 10px; margin: 8px 0; background: #fff5f8; border-left: 4px solid #840132;">
+                  <a href="${donor.url}" style="color: #840132; text-decoration: none; border-bottom: 1px solid #840132;">${donor.text}</a>
+                </li>
+              `;
+            } else {
+              html += `
+                <li style="padding: 10px; margin: 8px 0; background: #fff5f8; border-left: 4px solid #840132;">
+                  ${donor.text}
+                </li>
+              `;
+            }
+          });
+          html += `</ul>`;
+        }
+      }
+      
+      // PROJECTS SECTION (with clickable URLs)
+      const projects = document.querySelector('#projects');
+      if (projects) {
+        const title = getText(projects, 'h2');
+        const subtitle = getText(projects, '.section-head p');
+        
+        // Extract project cards with their links
+        const projectCards = projects.querySelectorAll('.donor-card');
+        const projectData = Array.from(projectCards).map(card => {
+          const link = card.querySelector('a');
+          if (!link) return null;
+          return {
+            text: link.textContent.trim(),
+            url: link.getAttribute('href')
+          };
+        }).filter(Boolean);
+        
+        if (title && projectData.length) {
+          html += `
+            <div style="page-break-before: always;"></div>
+            <h2 style="color: #840132; font-size: 20pt; margin: 30px 0 10px; padding-bottom: 8px; border-bottom: 2px solid #840132;">${title}</h2>
+          `;
+          if (subtitle) {
+            html += `<p style="color: #666; font-style: italic; margin: 0 0 20px;">${subtitle}</p>`;
+          }
+          
+          html += `<ul style="list-style: none; padding: 0; margin: 0;">`;
+          projectData.forEach(project => {
+            // Create clickable link in PDF with underline and color
+            html += `
+              <li style="padding: 10px; margin: 8px 0; background: #fffef9; border-left: 4px solid #D4AF37;">
+                <a href="${project.url}" style="color: #840132; text-decoration: none; border-bottom: 1px solid #840132;">${project.text}</a>
+              </li>
+            `;
+          });
+          html += `</ul>`;
+          html += `<p style="margin: 15px 0 0; color: #666; font-size: 9pt; font-style: italic;">Note: All project names are clickable links in PDF viewers that support hyperlinks.</p>`;
+        }
+      }
+      
+      // FOOTER
+      html += `
+        <div style="margin-top: 50px; padding-top: 15px; border-top: 2px solid #ccc; text-align: center;">
+          <p style="margin: 5px 0; font-weight: 700; color: #840132;">Environment and Sustainable Development Unit (ESDU)</p>
+          <p style="margin: 5px 0; color: #666;">American University of Beirut</p>
+          <p style="margin: 5px 0; color: #999; font-size: 9pt;">© ${new Date().getFullYear()} ESDU. All rights reserved.</p>
+        </div>
+      `;
+      
       container.innerHTML = html;
       document.body.appendChild(container);
       
-      console.log('Container added to DOM');
-      console.log('Container children count:', container.children.length);
-      console.log('Container text length:', container.textContent.length);
-      
-      // Wait for DOM to settle
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      console.log('Starting PDF generation...');
-      
-      // PDF generation options - simplified for debugging
-      const options = {
-        margin: 10,
+      // Generate PDF with cross-browser compatible settings
+      const opt = {
+        margin: 15,
         filename: filename,
         image: { 
           type: 'jpeg', 
-          quality: 0.95 
+          quality: 0.98 
         },
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          logging: true,
-          letterRendering: true
+          logging: false,
+          letterRendering: true,
+          allowTaint: false,
+          removeContainer: true,
+          imageTimeout: 15000,
+          // Cross-browser font rendering
+          foreignObjectRendering: false
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait'
+          orientation: 'portrait',
+          compress: true,
+          // Enable hyperlinks in PDF
+          putOnlyUsedFonts: true,
+          floatPrecision: 16
         },
         pagebreak: { 
-          mode: ['avoid-all', 'css', 'legacy']
-        }
+          mode: ['css', 'legacy'],
+          before: '.page-break-before',
+          after: '.page-break-after',
+          avoid: ['tr', 'td', 'th']
+        },
+        // Enable link detection for clickable URLs
+        enableLinks: true
       };
       
-      console.log('Calling html2pdf with options:', options);
-      
-      // Generate PDF with better error handling
-      try {
-        await html2pdf().set(options).from(container).save();
-        console.log('=== PDF GENERATION COMPLETE ===');
-      } catch (pdfError) {
-        console.error('html2pdf error:', pdfError);
-        alert('PDF generation failed at rendering stage. Check console.');
-        throw pdfError;
-      }
-      
-      // Cleanup
-      if (container && container.parentNode) {
-        document.body.removeChild(container);
-      }
-      
-      // Reset button after delay
-      setTimeout(() => {
+      html2pdf().set(opt).from(container).save().then(() => {
+        // Cleanup
+        if (container && container.parentNode) {
+          document.body.removeChild(container);
+        }
         pdfBtn.innerHTML = originalHTML;
         pdfBtn.disabled = false;
-      }, 2000);
-      
+        
+        // Success feedback (optional)
+        const successMsg = document.createElement('div');
+        successMsg.textContent = '✓ PDF downloaded successfully';
+        successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #2d5a27; color: white; padding: 15px 20px; border-radius: 4px; z-index: 10000; font-family: Arial, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.15);';
+        document.body.appendChild(successMsg);
+        setTimeout(() => {
+          if (successMsg.parentNode) {
+            document.body.removeChild(successMsg);
+          }
+        }, 3000);
+      }).catch(err => {
+        console.error('PDF generation error:', err);
+        if (container && container.parentNode) {
+          document.body.removeChild(container);
+        }
+        pdfBtn.innerHTML = originalHTML;
+        pdfBtn.disabled = false;
+        
+        // Error feedback
+        alert('Failed to generate PDF. Please try again or use a different browser. Error: ' + (err.message || 'Unknown error'));
+      });
+        
     } catch (error) {
-      console.error('PDF generation failed:', error);
-      console.error('Error stack:', error.stack);
-      
-      // Show detailed error
-      const errorMsg = `PDF Generation Error:\n${error.message}\n\nCheck browser console for details.`;
-      alert(errorMsg);
-      
+      console.error('PDF exception:', error);
       pdfBtn.innerHTML = originalHTML;
       pdfBtn.disabled = false;
-      
-      // Try to remove container if it exists
-      const container = document.querySelector('#pdf-temp-container');
-      if (container && container.parentNode) {
-        document.body.removeChild(container);
-      }
+      alert('An error occurred while generating the PDF. Please try again.');
     }
   });
 });
