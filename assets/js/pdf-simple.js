@@ -29,28 +29,25 @@ ready(() => {
       
       console.log('Starting PDF generation...');
       
-      // CRITICAL: Scroll through entire page to trigger all lazy-loaded content
-      // and IntersectionObserver callbacks
-      console.log('Revealing all content by scrolling...');
-      const originalScrollPos = window.pageYOffset;
+      // Force all elements with data-reveal to be visible without scrolling
+      console.log('Forcing visibility on all elements...');
+      const revealElements = document.querySelectorAll('[data-reveal]');
+      const originalVisibility = [];
       
-      // Scroll to bottom to trigger all IntersectionObservers
-      window.scrollTo(0, document.body.scrollHeight);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      revealElements.forEach((el, idx) => {
+        originalVisibility[idx] = {
+          el: el,
+          classes: el.className
+        };
+        el.classList.add('visible');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
       
-      // Scroll back to top
-      window.scrollTo(0, 0);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait for any animations to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Scroll to middle
-      window.scrollTo(0, document.body.scrollHeight / 2);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Restore original position
-      window.scrollTo(0, originalScrollPos);
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      console.log('All content should now be visible');
+      console.log(`Forced visibility on ${revealElements.length} elements`);
       
       // Helper functions for safe content extraction
       const safeGetText = (element, selector) => {
@@ -497,6 +494,14 @@ ready(() => {
         if (container && container.parentNode) {
           document.body.removeChild(container);
         }
+        
+        // Restore original visibility states
+        originalVisibility.forEach(item => {
+          item.el.className = item.classes;
+          item.el.style.opacity = '';
+          item.el.style.transform = '';
+        });
+        
         pdfBtn.innerHTML = originalHTML;
         pdfBtn.disabled = false;
         
@@ -515,6 +520,14 @@ ready(() => {
         if (container && container.parentNode) {
           document.body.removeChild(container);
         }
+        
+        // Restore original visibility states on error
+        originalVisibility.forEach(item => {
+          item.el.className = item.classes;
+          item.el.style.opacity = '';
+          item.el.style.transform = '';
+        });
+        
         pdfBtn.innerHTML = originalHTML;
         pdfBtn.disabled = false;
         
