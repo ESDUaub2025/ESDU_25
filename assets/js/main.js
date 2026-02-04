@@ -86,7 +86,7 @@ ready(() => {
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.15 });
-  document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card').forEach(el => io.observe(el));
+  document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card, .foreword-content, .foreword-placeholder').forEach(el => io.observe(el));
   
   // Proximity Lift Effect for Donor Cards (No Crowding)
   const donorCards = document.querySelectorAll('.donor-card');

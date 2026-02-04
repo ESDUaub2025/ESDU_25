@@ -50,6 +50,37 @@
    2. HERO SECTION ANIMATIONS
    ============================================== */
 
+/* Foreword section fade-up animation */
+.foreword-content,
+.foreword-placeholder {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s var(--anim-ease-smooth),
+              transform 0.8s var(--anim-ease-smooth);
+}
+
+.foreword-content.visible,
+.foreword-placeholder.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quote decoration subtle fade-in */
+.quote-decoration {
+  animation: quoteFadeIn 1.5s var(--anim-ease-smooth) 0.3s both;
+}
+
+@keyframes quoteFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+}
+
 /* Hero ESDU title - dramatic sweep in */
 .hero-esdu {
   opacity: 1;
