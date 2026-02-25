@@ -51,17 +51,24 @@
    ============================================== */
 
 /* Foreword section fade-up animation */
-.foreword-content,
-.foreword-placeholder {
+.foreword-content {
   opacity: 0;
+  -webkit-transform: translateY(30px);
+  -ms-transform: translateY(30px);
   transform: translateY(30px);
   transition: opacity 0.8s var(--anim-ease-smooth),
               transform 0.8s var(--anim-ease-smooth);
 }
 
-.foreword-content.visible,
-.foreword-placeholder.visible {
+/* Stagger: second card animates slightly later */
+.foreword-grid .foreword-content:nth-child(2) {
+  transition-delay: 0.15s;
+}
+
+.foreword-content.visible {
   opacity: 1;
+  -webkit-transform: translateY(0);
+  -ms-transform: translateY(0);
   transform: translateY(0);
 }
 
