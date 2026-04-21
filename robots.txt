@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ESDUaub2025.github.io/ESDU_25/sitemap.xml
+Sitemap: https://esdUaub2025.github.io/ESDU_25/sitemap.xml
