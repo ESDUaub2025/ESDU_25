@@ -56,29 +56,61 @@ ready(() => {
   // Mobile nav toggle
   const nav = document.querySelector('.site-nav');
   const toggle = document.querySelector('.nav-toggle');
+  const backdrop = document.getElementById('nav-backdrop');
+  const navPdfLink = document.getElementById('nav-pdf-link');
+
+  function closeNav() {
+    nav.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open navigation menu');
+    if (backdrop) backdrop.classList.remove('active');
+    document.body.classList.remove('nav-open');
+  }
+
   if (nav && toggle) {
     toggle.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent immediate closing
-      const expanded = nav.getAttribute('aria-expanded') === 'true';
-      nav.setAttribute('aria-expanded', String(!expanded));
-      toggle.setAttribute('aria-expanded', String(!expanded));
+      e.stopPropagation();
+      const isOpen = nav.getAttribute('aria-expanded') !== 'true';
+      nav.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+      if (backdrop) backdrop.classList.toggle('active', isOpen);
+      document.body.classList.toggle('nav-open', isOpen);
     });
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-      const expanded = nav.getAttribute('aria-expanded') === 'true';
-      if (expanded && !nav.contains(e.target)) {
-        nav.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-expanded', 'false');
+      if (nav.getAttribute('aria-expanded') === 'true' && !nav.contains(e.target)) {
+        closeNav();
       }
     });
 
-    // Close menu when clicking a link
+    // Close menu when clicking backdrop
+    if (backdrop) {
+      backdrop.addEventListener('click', closeNav);
+    }
+
+    // Close menu when clicking a nav link
     nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        nav.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
+      link.addEventListener('click', () => { closeNav(); });
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.getAttribute('aria-expanded') === 'true') {
+        closeNav();
+        toggle.focus();
+      }
+    });
+  }
+
+  // Mobile nav PDF link — triggers the main download button
+  if (navPdfLink) {
+    navPdfLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeNav();
+      const pdfBtn = document.getElementById('download-pdf-btn');
+      if (pdfBtn) pdfBtn.click();
     });
   }
 
