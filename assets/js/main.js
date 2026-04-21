@@ -87,6 +87,20 @@ ready(() => {
     entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.15 });
   document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card, .foreword-content, .foreword-placeholder').forEach(el => io.observe(el));
+
+  // Foreword accordion toggles
+  document.querySelectorAll('.foreword-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var card = this.closest('.foreword-content');
+      if (!card) return;
+      var expanded = card.classList.toggle('is-expanded');
+      this.setAttribute('aria-expanded', String(expanded));
+      var expandable = card.querySelector('.foreword-expandable');
+      if (expandable) expandable.setAttribute('aria-hidden', String(!expanded));
+      var textEl = this.querySelector('.foreword-toggle-text');
+      if (textEl) textEl.textContent = expanded ? 'Show less' : 'Read full message';
+    });
+  });
   
   // Proximity Lift Effect for Donor Cards (No Crowding)
   const donorCards = document.querySelectorAll('.donor-card');
