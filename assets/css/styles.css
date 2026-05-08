@@ -2633,12 +2633,47 @@ img.image-error {
   margin: 0;
 }
 
+.foreword-subtle-section {
+  text-align: center;
+  margin: 0 auto 1.25rem;
+}
+
+.foreword-subtle-title {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-size: clamp(12px, 1.9vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-light);
+}
+
+.foreword-subtle-title::before,
+.foreword-subtle-title::after {
+  content: "";
+  width: 32px;
+  height: 1px;
+  background: rgba(132, 1, 50, 0.22);
+}
+
 /* Two-column grid for the message cards */
 .foreword-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   align-items: stretch;
+}
+
+.foreword-grid-single {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: min(860px, 100%);
+  margin: clamp(2rem, 4vw, 3rem) auto 0;
 }
 
 /* Each foreword card */
@@ -2851,6 +2886,11 @@ img.image-error {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+
+  .foreword-grid-single {
+    max-width: 100%;
+    margin-top: 2rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2887,6 +2927,11 @@ img.image-error {
 
   .foreword-grid {
     grid-template-columns: 1fr;
+  }
+
+  .foreword-grid-single {
+    max-width: 100%;
+    margin-top: 1.5rem;
   }
 
   .quote-decoration {
