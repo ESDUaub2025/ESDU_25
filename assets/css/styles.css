@@ -2670,15 +2670,12 @@ img.image-error {
   align-items: stretch;
 }
 
-.foreword-grid-previous {
-  margin: clamp(1.15rem, 2.2vw, 1.75rem) 0 0;
+.foreword-grid.has-expanded-card {
+  align-items: start;
 }
 
-.foreword-grid-previous .foreword-content {
-  grid-column: 1 / -1;
-  width: 100%;
-  max-width: calc((100% - 2rem) / 2);
-  justify-self: center;
+.foreword-grid-previous {
+  margin: clamp(1.15rem, 2.2vw, 1.75rem) 0 0;
 }
 
 /* Each foreword card */
@@ -2746,7 +2743,7 @@ img.image-error {
   box-shadow: 0 4px 14px rgba(132, 1, 50, 0.18);
 }
 
-.foreword-portrait-sarah {
+.foreword-portrait-previous {
   width: 66px;
   height: 66px;
 }
@@ -2900,10 +2897,6 @@ img.image-error {
   .foreword-grid-previous {
     margin-top: 1.25rem;
   }
-
-  .foreword-grid-previous .foreword-content {
-    max-width: 100%;
-  }
 }
 
 @media (max-width: 640px) {
@@ -2924,7 +2917,7 @@ img.image-error {
     height: 60px;
   }
 
-  .foreword-portrait-sarah {
+  .foreword-portrait-previous {
     width: 56px;
     height: 56px;
   }
@@ -2949,10 +2942,6 @@ img.image-error {
 
   .foreword-grid-previous {
     margin-top: 1rem;
-  }
-
-  .foreword-grid-previous .foreword-content {
-    max-width: 100%;
   }
 
   .quote-decoration {

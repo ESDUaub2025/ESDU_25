@@ -121,16 +121,55 @@ ready(() => {
   document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card, .foreword-content, .foreword-placeholder').forEach(el => io.observe(el));
 
   // Foreword accordion toggles
+  function updateForewordGridState(grid) {
+    if (!grid) return;
+    var hasActiveCard = !!grid.querySelector('.foreword-content.is-expanded, .foreword-content.is-collapsing');
+    grid.classList.toggle('has-expanded-card', hasActiveCard);
+  }
+
   document.querySelectorAll('.foreword-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {
       var card = this.closest('.foreword-content');
       if (!card) return;
-      var expanded = card.classList.toggle('is-expanded');
-      this.setAttribute('aria-expanded', String(expanded));
+
+      var grid = card.closest('.foreword-grid');
       var expandable = card.querySelector('.foreword-expandable');
-      if (expandable) expandable.setAttribute('aria-hidden', String(!expanded));
       var textEl = this.querySelector('.foreword-toggle-text');
-      if (textEl) textEl.textContent = expanded ? 'Show less' : 'Read full message';
+      var wasExpanded = card.classList.contains('is-expanded');
+
+      if (wasExpanded) {
+        card.classList.remove('is-expanded');
+        card.classList.add('is-collapsing');
+        this.setAttribute('aria-expanded', 'false');
+        if (expandable) expandable.setAttribute('aria-hidden', 'true');
+        if (textEl) textEl.textContent = 'Read full message';
+        updateForewordGridState(grid);
+
+        if (expandable) {
+          var done = false;
+          var onCollapseEnd = function(event) {
+            if (done) return;
+            if (event && event.target !== expandable) return;
+            done = true;
+            card.classList.remove('is-collapsing');
+            updateForewordGridState(grid);
+            expandable.removeEventListener('transitionend', onCollapseEnd);
+          };
+
+          expandable.addEventListener('transitionend', onCollapseEnd);
+          setTimeout(onCollapseEnd, 650);
+        } else {
+          card.classList.remove('is-collapsing');
+          updateForewordGridState(grid);
+        }
+      } else {
+        card.classList.add('is-expanded');
+        card.classList.remove('is-collapsing');
+        this.setAttribute('aria-expanded', 'true');
+        if (expandable) expandable.setAttribute('aria-hidden', 'false');
+        if (textEl) textEl.textContent = 'Show less';
+        updateForewordGridState(grid);
+      }
     });
   });
   
