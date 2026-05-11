@@ -466,6 +466,7 @@ ready(() => {
       { year: 2023, text: 'Urban Oasis engagement center launched; wins PRIMA WEFE Nexus Award — First Place' },
       { year: 2024, text: 'AFESD Small Green Innovative Project secured; Champion of Plastic Pollution Prevention' },
       { year: 2025, text: 'Strategy 2025–2030 and Portfolio 2025 published' },
+      { year: 2026, text: 'ESDU wins the Khalifa Innovation Award for a second time' },
     ];
     milestones.forEach(m => {
       const year = document.createElement('div');
