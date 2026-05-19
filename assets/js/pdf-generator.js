@@ -33,6 +33,11 @@ ready(() => {
       const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
       const txt = el => el ? el.textContent.trim() : '';
       const esc = t => { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+      const absUrl = href => {
+        if (!href) return '';
+        try { return new URL(href, window.location.href).href; }
+        catch (_) { return href; }
+      };
 
       // ── Design tokens ──
       const brand = '#840132';
@@ -85,17 +90,23 @@ ready(() => {
       //  TABLE OF CONTENTS
       // ═══════════════════════════════════════════
       const tocItems = [
-        'Foreword — Messages from AUB Leadership',
-        'Mission, Vision, Core Values',
-        'Our Story — 25 Years of Impact',
-        'ESDU at Work',
-        'Strategic Goals 2025–2030',
-        'Keepers of the Land',
-        'Impact & Outreach',
-        'Projects',
-        'Partners and Donors',
-        'Resources'
-      ];
+        (() => {
+          const sec = $('#foreword');
+          if (!sec) return null;
+          const title = txt($('.foreword-section-header h2', sec)) || 'Foreword';
+          const groups = $$('.foreword-subtle-title', sec).map(el => txt(el)).filter(Boolean);
+          return groups.length ? `${title} — ${groups.join(' / ')}` : title;
+        })(),
+        (() => { const sec = $('#mission');   return sec ? (txt($('h2', sec)) || 'Mission, Vision, Core Values') : null; })(),
+        (() => { const sec = $('#story');     return sec ? (txt($('h2', sec)) || 'Our Story') : null; })(),
+        (() => { const sec = $('#work');      return sec ? (txt($('h2', sec)) || 'ESDU at Work') : null; })(),
+        (() => { const sec = $('#goals');     return sec ? (txt($('h2', sec)) || 'Strategic Goals') : null; })(),
+        (() => { const sec = $('#keepers');   return sec ? (txt($('h2', sec)) || txt($('.kotl-card h2', sec)) || 'Keepers of the Land') : null; })(),
+        (() => { const sec = $('#impact');    return sec ? (txt($('h2', sec)) || 'Impact & Outreach') : null; })(),
+        (() => { const sec = $('#projects');  return sec ? (txt($('h2', sec)) || 'Projects') : null; })(),
+        (() => { const sec = $('#partners');  return sec ? (txt($('h2', sec)) || 'Partners and Donors') : null; })(),
+        (() => { const sec = $('#resources'); return sec ? (txt($('h2', sec)) || 'Resources') : null; })()
+      ].filter(Boolean);
 
       html += `<div style="padding:30px 0;page-break-after:always;">`;
       html += `<h2 style="color:${brand};font-size:18pt;margin:0 0 24px;text-align:center;">Contents</h2>`;
@@ -113,24 +124,33 @@ ready(() => {
       const foreword = $('#foreword');
       if (foreword) {
         const sTitle = txt($('.foreword-section-header h2', foreword)) || 'Foreword';
-        const sSub   = txt($('.foreword-subtitle', foreword));
-        const articles = $$('.foreword-content', foreword);
+        const groups = $$('.foreword-grid', foreword);
+        const groupTitles = $$('.foreword-subtle-title', foreword).map(el => txt(el)).filter(Boolean);
 
-        if (articles.length) {
+        if (groups.length) {
           html += `<div style="padding:4px 0;">`;
           html += `<h2 style="color:${brand};font-size:18pt;margin:0 0 6px;padding-bottom:6px;border-bottom:2px solid ${brand};text-align:center;">${esc(sTitle)}</h2>`;
-          if (sSub) html += `<p style="text-align:center;color:#666;font-style:italic;margin:0 0 16px;font-size:10pt;">${esc(sSub)}</p>`;
 
-          articles.forEach((article, idx) => {
-            const author      = txt($('.author-name', article));
-            const authorTitle = txt($('.author-title', article));
-            const authorOrg   = txt($('.author-org', article));
-            const paras       = $$('.foreword-body p', article).map(p => txt(p)).filter(t => t);
+          groups.forEach((group, groupIdx) => {
+            const groupCards = $$('.foreword-content', group);
+            if (!groupCards.length) return;
 
-            if (paras.length) {
-              if (idx > 0) html += pgBreak; // each foreword on its own page
+            const groupTitle = groupTitles[groupIdx] || '';
+            if (groupTitle) {
+              html += `<h3 style="margin:16px 0 10px;color:${brand};font-size:11pt;text-transform:uppercase;letter-spacing:.05em;">${esc(groupTitle)}</h3>`;
+            }
 
-              html += `<div style="margin-bottom:8px;padding:14px 16px;background:linear-gradient(135deg,#fdf6f8,#fff);border-left:4px solid ${brand};border-radius:4px;">`;
+            groupCards.forEach((article) => {
+              const author      = txt($('.author-name', article));
+              const authorTitle = txt($('.author-title', article));
+              const authorOrg   = txt($('.author-org', article));
+              const lead        = txt($('.foreword-closing', article));
+              const details     = $$('.foreword-expandable p', article).map(p => txt(p)).filter(Boolean);
+              const paras       = [lead, ...details].filter(Boolean);
+
+              if (!paras.length) return;
+
+              html += `<div style="margin:0 0 10px;padding:14px 16px;background:linear-gradient(135deg,#fdf6f8,#fff);border-left:4px solid ${brand};border-radius:4px;page-break-inside:avoid;break-inside:avoid;">`;
               if (author) {
                 html += `<div style="margin-bottom:10px;">`;
                 html += `<span style="font-weight:700;color:${brand};font-size:12pt;">${esc(author)}</span><br/>`;
@@ -138,12 +158,17 @@ ready(() => {
                 if (authorOrg)   html += `<span style="color:#888;font-style:italic;font-size:9pt;">${esc(authorOrg)}</span>`;
                 html += `</div>`;
               }
-              paras.forEach(p => {
-                html += `<p style="margin:0 0 8px;text-align:justify;line-height:1.6;font-size:9.5pt;color:#333;">${esc(p)}</p>`;
+
+              paras.forEach((p, idx) => {
+                const extraStyle = idx === 0
+                  ? `font-style:italic;font-weight:600;color:${brand};border-left:3px solid ${brand};padding-left:8px;`
+                  : '';
+                html += `<p style="margin:0 0 8px;text-align:justify;line-height:1.6;font-size:9.5pt;color:#333;${extraStyle}">${esc(p)}</p>`;
               });
               html += `</div>`;
-            }
+            });
           });
+
           html += `</div>`;
           html += pgBreak;
         }
@@ -355,10 +380,10 @@ ready(() => {
           html += `<div style="columns:2;column-gap:24px;font-size:10pt;">`;
           cards.forEach(link => {
             const text = txt(link);
-            const url  = link.getAttribute('href');
+            const url  = absUrl(link.getAttribute('href'));
             if (text && url) {
               html += `<div style="break-inside:avoid;margin:0 0 8px;padding:7px 10px;background:#fafafa;border-radius:3px;border:1px solid #eee;">`;
-              html += `<a href="${url}" style="color:${brand};text-decoration:none;font-size:9.5pt;" target="_blank">${esc(text)}</a>`;
+              html += `<a href="${esc(url)}" style="color:${brand};text-decoration:none;font-size:9.5pt;" target="_blank">${esc(text)}</a>`;
               html += `</div>`;
             }
           });
@@ -383,10 +408,10 @@ ready(() => {
           html += `<div style="columns:2;column-gap:24px;font-size:10pt;">`;
           cards.forEach(link => {
             const text = txt(link);
-            const url  = link.getAttribute('href');
+            const url  = absUrl(link.getAttribute('href'));
             if (text && url) {
               html += `<div style="break-inside:avoid;margin:0 0 8px;padding:7px 10px;background:#f0f8f8;border-radius:3px;border:1px solid #d8eaea;">`;
-              html += `<a href="${url}" style="color:${teal};text-decoration:none;font-size:9.5pt;" target="_blank">${esc(text)}</a>`;
+              html += `<a href="${esc(url)}" style="color:${teal};text-decoration:none;font-size:9.5pt;" target="_blank">${esc(text)}</a>`;
               html += `</div>`;
             }
           });
@@ -412,11 +437,11 @@ ready(() => {
             files.forEach(link => {
               const name = txt($('.file-name', link));
               const meta = txt($('.file-meta', link));
-              const url  = link.getAttribute('href');
+              const url  = absUrl(link.getAttribute('href'));
               if (name) {
                 html += `<div style="margin:8px 0;padding:10px 14px;background:#f0f8f0;border-left:4px solid ${green};border-radius:3px;">`;
                 if (url) {
-                  html += `<a href="${url}" style="color:${green};font-size:11pt;font-weight:600;text-decoration:none;" target="_blank">${esc(name)}</a>`;
+                  html += `<a href="${esc(url)}" style="color:${green};font-size:11pt;font-weight:600;text-decoration:none;" target="_blank">${esc(name)}</a>`;
                 } else {
                   html += `<span style="color:${green};font-size:11pt;font-weight:600;">${esc(name)}</span>`;
                 }
