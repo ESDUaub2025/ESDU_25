@@ -281,6 +281,51 @@
                 </button>
               </div>
             </article>
+
+            <!-- Director's Message -->
+            <article class="foreword-content" data-reveal>
+              <div class="foreword-card-header">
+                <div class="quote-decoration" aria-hidden="true">&ldquo;</div>
+                <div class="foreword-author-row">
+                  <img class="foreword-portrait" src="./assets/images/shamadeh.JPG" alt="Dr. Shadi Hamadeh, Director of ESDU and Professor at FAFS" loading="lazy" />
+                  <div class="foreword-author-intro">
+                    <div class="author-name">Dr. Shadi Hamadeh</div>
+                    <div class="author-title">Director, ESDU and Professor at FAFS</div>
+                    <div class="author-org">American University of Beirut</div>
+                  </div>
+                </div>
+              </div>
+              <div class="foreword-body">
+                <p class="foreword-closing">&ldquo;We woke up from the lethargy produced by the Lebanese war... We wanted to replace death with life, sadness with joy, and despair with hope.&rdquo;</p>
+                <div class="foreword-expandable" aria-hidden="true">
+                  <p>These words from the Cactus Flower capture not only a moment in time, but the very essence of what would later become the Environment and Sustainable Development Unit.</p>
+                  <p>Twenty-five years ago, a group of young scientists and academics came together carrying more questions than answers. In many ways, they were rebels with a cause; frustrated with systems disconnected from the realities surrounding them and searching for meaning, relevance, and impact. Yet what united them was a shared conviction that knowledge must serve people and that research must remain rooted in the land, in communities, and in real human needs.</p>
+                  <p>From this conviction emerged an ambitious and perhaps idealistic motto: Keepers of the Land.</p>
+                  <p>At the time, it was little more than a dream, a symbolic declaration made by young academics determined to reconnect science with life itself. Soon after, however, the harsh realities of post-civil war Lebanon took over. Daily struggles, institutional limitations, financial constraints, and security concerns consumed both the country and the university environment. The original promise seemed buried beneath layers of urgency and survival.</p>
+                  <p>Yet even as the motto faded into the background, its spirit never disappeared.</p>
+                  <p>The turning point came with the Unit's first project, supported by the International Development Research Centre. It was more than funding; it was validation. It marked the beginning of a journey where research would no longer be confined to academic outputs but would evolve into a tool for transformation and action.</p>
+                  <p>From those early days, the Environment and Sustainable Development Unit (ESDU) grew as a grassroots initiative at heart: resilient, adaptive, and deeply connected to communities. While its impact expanded nationally and regionally, its resources remained modest, often operating at the edge, like Sisyphus pushing the rock uphill time and again. Each effort demanded renewal; each achievement required starting over, yet the climb never ceased.</p>
+                  <p>With the support of visionary leadership, including President John Waterbury and Dean Emeritus Dr. Nuhad Dagher, the Unit was given the space to grow. It gradually became a home for projects that did not fit within traditional academic boundaries: interdisciplinary, community-driven, and solution-oriented initiatives capable of bridging science with society.</p>
+                  <p>Then came the storms that would redefine the meaning of Keepers of the Land.</p>
+                  <p>From economic collapse to the COVID-19 pandemic, from political instability to repeated national crises, Lebanon entered one of the darkest periods in its modern history. International trade froze, livelihoods disappeared, and food insecurity became an immediate reality. Across villages, towns, and even urban balconies, people returned instinctively to the land, searching for dignity, sustenance, and survival.</p>
+                  <p>At that moment, the old motto resurfaced with renewed meaning.</p>
+                  <p>The Keepers of the Land were no longer a small group within a university. They became farmers, mothers, youth, cooperatives, municipalities, researchers, entrepreneurs, displaced families, and entire communities refusing to surrender despair. The land itself became both refuge and resistance.</p>
+                  <p>ESDU answered that calling not as an observer, but as an active participant. The Unit worked where it mattered most: in fragile contexts, underserved regions, and under difficult conditions. It navigated the complex interface between research and development, between knowledge generation and real-world application. It bridged development and relief in moments of crisis, proving that sustainability is not a luxury reserved for stability, but a necessity for survival itself.</p>
+                  <p>Over the years, this mission translated into concrete milestones. From establishing regional knowledge platforms such as Karianet, to launching rural development networks, advancing food security initiatives, promoting the WEFE Nexus approach, supporting vulnerable communities, and creating innovative sustainability models such as the Urban Oasis, the Unit continuously pushed boundaries while remaining grounded in people and place.</p>
+                  <p>Its work received recognition through prestigious national and regional awards, including the PRIMA WEFE Nexus Award, as well as acknowledgments from institutions such as the Food and Agriculture Organization of the United Nations and the University of Guelph.</p>
+                  <p>Winning the Khalifa International Award for Date Palm and Agricultural Innovation not once, but twice, stands as a milestone in itself. It reflects not only excellence in innovation, but consistency in impact and a long-standing commitment to advancing sustainable solutions for the region.</p>
+                  <p>Looking back, this is a story of resilience: not only institutional resilience, but personal and collective resilience. It is a story of persistence in the face of uncertainty, belief in the face of doubt, and action in the face of limitation.</p>
+                  <p>But perhaps above all, it is a story about identity.</p>
+                  <p>Because the Keepers of the Land were never simply a slogan. They became a philosophy, a community, and a shared responsibility. A reminder that despite crises, displacement, and fragmentation, people remain connected to their commons, to nature, to culture, and to one another.</p>
+                  <p>And today, after twenty-five years, the call continues.</p>
+                  <p>Not as the voice of a single unit, but as a growing movement of keepers across Lebanon, the region, and beyond: individuals and communities who believe that science must serve humanity, that sustainability must be lived and practiced, and that meaningful change begins not with abundant resources, but with purpose, courage, and the willingness to act.</p>
+                </div>
+                <button class="foreword-toggle" aria-expanded="false" aria-label="Read full message from Dr. Shadi Hamadeh">
+                  <span class="foreword-toggle-text">Read full message</span>
+                  <svg class="foreword-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+            </article>
           </div>
 
           <div class="foreword-subtle-section" data-reveal>
@@ -885,6 +930,22 @@
         <p class="copyright">© <span id="year"></span> ESDU. All rights reserved.</p>
       </div>
     </footer>
+
+    <div id="foreword-modal" class="foreword-modal" aria-hidden="true">
+      <div class="foreword-modal-backdrop" data-foreword-close></div>
+      <div class="foreword-modal-panel" role="dialog" aria-modal="true" aria-labelledby="foreword-modal-title" aria-describedby="foreword-modal-body" tabindex="-1">
+        <button type="button" class="foreword-modal-close" data-foreword-close aria-label="Close full message">×</button>
+        <header class="foreword-modal-header">
+          <img id="foreword-modal-portrait" class="foreword-modal-portrait" alt="" loading="lazy" hidden />
+          <div class="foreword-modal-meta">
+            <h3 id="foreword-modal-title"></h3>
+            <p id="foreword-modal-role" class="foreword-modal-role"></p>
+            <p id="foreword-modal-org" class="foreword-modal-org"></p>
+          </div>
+        </header>
+        <div id="foreword-modal-body" class="foreword-modal-body"></div>
+      </div>
+    </div>
 
     <script type="application/ld+json">
     {

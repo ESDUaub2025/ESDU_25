@@ -120,58 +120,144 @@ ready(() => {
   }, { threshold: 0.15 });
   document.querySelectorAll('[data-reveal], .kpi, .card, .slide, .goal-card, .initiative-item, .mvv .card, .hero-ctas .btn, .ecosystem-card, .donor-card, .foreword-content, .foreword-placeholder').forEach(el => io.observe(el));
 
-  // Foreword accordion toggles
-  function updateForewordGridState(grid) {
-    if (!grid) return;
-    var hasActiveCard = !!grid.querySelector('.foreword-content.is-expanded, .foreword-content.is-collapsing');
-    grid.classList.toggle('has-expanded-card', hasActiveCard);
-  }
+  // Foreword modal reader
+  const forewordModal = document.getElementById('foreword-modal');
+  if (forewordModal) {
+    const forewordModalPanel = forewordModal.querySelector('.foreword-modal-panel');
+    const forewordModalTitle = document.getElementById('foreword-modal-title');
+    const forewordModalRole = document.getElementById('foreword-modal-role');
+    const forewordModalOrg = document.getElementById('foreword-modal-org');
+    const forewordModalPortrait = document.getElementById('foreword-modal-portrait');
+    const forewordModalBody = document.getElementById('foreword-modal-body');
+    const forewordModalClose = forewordModal.querySelector('.foreword-modal-close');
+    let activeForewordTrigger = null;
 
-  document.querySelectorAll('.foreword-toggle').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var card = this.closest('.foreword-content');
-      if (!card) return;
+    const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-      var grid = card.closest('.foreword-grid');
-      var expandable = card.querySelector('.foreword-expandable');
-      var textEl = this.querySelector('.foreword-toggle-text');
-      var wasExpanded = card.classList.contains('is-expanded');
-
-      if (wasExpanded) {
-        card.classList.remove('is-expanded');
-        card.classList.add('is-collapsing');
-        this.setAttribute('aria-expanded', 'false');
-        if (expandable) expandable.setAttribute('aria-hidden', 'true');
-        if (textEl) textEl.textContent = 'Read full message';
-        updateForewordGridState(grid);
-
-        if (expandable) {
-          var done = false;
-          var onCollapseEnd = function(event) {
-            if (done) return;
-            if (event && event.target !== expandable) return;
-            done = true;
-            card.classList.remove('is-collapsing');
-            updateForewordGridState(grid);
-            expandable.removeEventListener('transitionend', onCollapseEnd);
-          };
-
-          expandable.addEventListener('transitionend', onCollapseEnd);
-          setTimeout(onCollapseEnd, 650);
-        } else {
-          card.classList.remove('is-collapsing');
-          updateForewordGridState(grid);
-        }
+    function setForewordModalPortrait(card) {
+      if (!forewordModalPortrait) return;
+      const cardPortrait = card.querySelector('.foreword-author-row img.foreword-portrait');
+      if (cardPortrait && cardPortrait.getAttribute('src')) {
+        forewordModalPortrait.src = cardPortrait.getAttribute('src');
+        forewordModalPortrait.alt = cardPortrait.getAttribute('alt') || '';
+        forewordModalPortrait.hidden = false;
       } else {
-        card.classList.add('is-expanded');
-        card.classList.remove('is-collapsing');
-        this.setAttribute('aria-expanded', 'true');
-        if (expandable) expandable.setAttribute('aria-hidden', 'false');
-        if (textEl) textEl.textContent = 'Show less';
-        updateForewordGridState(grid);
+        forewordModalPortrait.removeAttribute('src');
+        forewordModalPortrait.alt = '';
+        forewordModalPortrait.hidden = true;
+      }
+    }
+
+    function getForewordModalParagraphs(card) {
+      const texts = [];
+      const lead = card.querySelector('.foreword-closing');
+      if (lead && lead.textContent) {
+        const leadText = lead.textContent.trim();
+        if (leadText) texts.push(leadText);
+      }
+
+      card.querySelectorAll('.foreword-expandable p').forEach(function(p) {
+        const text = (p.textContent || '').trim();
+        if (text) texts.push(text);
+      });
+
+      return texts;
+    }
+
+    function populateForewordModal(card) {
+      if (!forewordModalBody) return;
+
+      const name = card.querySelector('.author-name');
+      const role = card.querySelector('.author-title');
+      const org = card.querySelector('.author-org');
+
+      if (forewordModalTitle) forewordModalTitle.textContent = name ? name.textContent.trim() : 'Foreword Message';
+      if (forewordModalRole) forewordModalRole.textContent = role ? role.textContent.trim() : '';
+      if (forewordModalOrg) forewordModalOrg.textContent = org ? org.textContent.trim() : '';
+
+      setForewordModalPortrait(card);
+
+      forewordModalBody.innerHTML = '';
+      const paragraphs = getForewordModalParagraphs(card);
+
+      paragraphs.forEach(function(text, index) {
+        const p = document.createElement('p');
+        p.textContent = text;
+        if (index === 0) p.classList.add('foreword-modal-lead');
+        forewordModalBody.appendChild(p);
+      });
+    }
+
+    function openForewordModal(card, trigger) {
+      populateForewordModal(card);
+      activeForewordTrigger = trigger || null;
+      if (activeForewordTrigger) activeForewordTrigger.setAttribute('aria-expanded', 'true');
+
+      forewordModal.classList.add('is-open');
+      forewordModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('foreword-modal-open');
+
+      if (forewordModalClose) {
+        forewordModalClose.focus();
+      } else if (forewordModalPanel) {
+        forewordModalPanel.focus();
+      }
+    }
+
+    function closeForewordModal() {
+      forewordModal.classList.remove('is-open');
+      forewordModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('foreword-modal-open');
+
+      if (activeForewordTrigger) {
+        activeForewordTrigger.setAttribute('aria-expanded', 'false');
+        activeForewordTrigger.focus();
+        activeForewordTrigger = null;
+      }
+    }
+
+    function trapForewordModalFocus(event) {
+      if (event.key !== 'Tab' || !forewordModal.classList.contains('is-open')) return;
+      const focusable = Array.from(forewordModal.querySelectorAll(FOCUSABLE_SELECTOR));
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.querySelectorAll('.foreword-toggle').forEach(function(btn) {
+      btn.addEventListener('click', function(event) {
+        event.preventDefault();
+        const card = this.closest('.foreword-content');
+        if (!card) return;
+        openForewordModal(card, this);
+      });
+    });
+
+    forewordModal.addEventListener('click', function(event) {
+      if (event.target && event.target.hasAttribute('data-foreword-close')) {
+        closeForewordModal();
       }
     });
-  });
+
+    document.addEventListener('keydown', function(event) {
+      if (!forewordModal.classList.contains('is-open')) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeForewordModal();
+        return;
+      }
+      trapForewordModalFocus(event);
+    });
+  }
   
   // Proximity Lift Effect for Donor Cards (No Crowding)
   const donorCards = document.querySelectorAll('.donor-card');
